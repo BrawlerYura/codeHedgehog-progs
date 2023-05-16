@@ -1,0 +1,138 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Coords {
+    int x = 0, y = 0;
+};
+
+void fillInAdjacencyGraph(vector<vector<int>> &graph, int rows, int columns) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            if (i + 2 < rows) {
+                if (j + 1 < columns) {
+                    graph[i * columns + j][(i + 2) * columns + j + 1] = 1;
+                    graph[(i + 2) * columns + j + 1][i * columns + j] = 1;
+                }
+                if (j - 1 >= 0) {
+                    graph[i * columns + j][(i + 2) * columns + j - 1] = 1;
+                    graph[(i + 2) * columns + j - 1][i * columns + j] = 1;
+                }
+            }
+            if (i - 2 >= 0) {
+                if (j + 1 < columns) {
+                    graph[i * columns + j][(i - 2) * columns + j + 1] = 1;
+                    graph[(i - 2) * columns + j + 1][i * columns + j] = 1;
+                }
+                if (j - 1 >= 0) {
+                    graph[i * columns + j][(i - 2) * columns + j - 1] = 1;
+                    graph[(i - 2) * columns + j - 1][i * columns + j] = 1;
+                }
+            }
+            if (j + 2 < columns) {
+                if (i + 1 < rows) {
+                    graph[i * columns + j][(i + 1) * columns + j + 2] = 1;
+                    graph[(i + 1) * columns + j + 2][i * columns + j] = 1;
+                }
+                if (i - 1 >= 0) {
+                    graph[i * columns + j][(i - 1) * columns + j + 2] = 1;
+                    graph[(i - 1) * columns + j + 2][i * columns + j] = 1;
+                }
+            }
+            if (j - 2 >= 0) {
+                if (i + 1 < rows) {
+                    graph[i * columns + j][(i + 1) * columns + j - 2] = 1;
+                    graph[(i + 1) * columns + j - 2][i * columns + j] = 1;
+                }
+                if (i - 1 >= 0) {
+                    graph[i * columns + j][(i - 1) * columns + j - 2] = 1;
+                    graph[(i - 1) * columns + j - 2][i * columns + j] = 1;
+                }
+            }
+        }
+    }
+}
+
+Coords findCoordsOfNode(int rows, int columns, int node) {
+    Coords coords;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            if (node == i * columns + j) {
+                coords.x = j + 1;
+                coords.y = i + 1;
+                return coords;
+            }
+        }
+    }
+}
+
+void printPath(int finalNode, vector<int> &previous, vector<int> &distance, int rows, int columns) {
+    vector<int> path;
+    int temp = finalNode;
+    path.push_back(temp);
+    while (previous[temp] != -1) {
+        temp = previous[temp];
+        path.insert(path.begin(), temp);
+    }
+    cout << distance[finalNode] + 1 << endl;
+    Coords coords;
+    for (int i = 0; i < path.size(); i++) {
+        coords = findCoordsOfNode(rows, columns, path[i]);
+        cout << coords.y << " " << coords.x << endl;
+    }
+}
+
+void
+breadthFirstSearch(int startNode, const vector<vector<int>> &adjacencyMatrix, int graphSize, int finalNode, int rows,
+                   int columns) {
+    int temp;
+    vector<bool> isUsed(graphSize, false);
+    vector<int> previous(graphSize, -1);
+    vector<int> distance(graphSize, -1);
+
+    if (startNode == finalNode) {
+        cout << "0";
+        return;
+    }
+    if (finalNode >= rows * columns) {
+        cout << -1;
+        return;
+    }
+
+    vector<int> queue;
+    queue.push_back(startNode);
+    isUsed[startNode] = true;
+    while (!queue.empty()) {
+        temp = queue[0];
+        queue.erase(queue.begin());
+        for (int j = 0; j < graphSize; j++) {
+            if (!isUsed[j] && adjacencyMatrix[temp][j] != 0) {
+                queue.push_back(j);
+                isUsed[j] = true;
+                distance[j] = distance[temp] + 1;
+                previous[j] = temp;
+            }
+        }
+    }
+
+    if (distance[finalNode] == -1) {
+        cout << -1;
+        return;
+    } else {
+        printPath(finalNode, previous, distance, rows, columns);
+    }
+}
+
+int main() {
+    int rows, columns;
+    cin >> rows >> columns;
+    Coords startCoords;
+    Coords finalCoords;
+    cin >> startCoords.y >> startCoords.x >> finalCoords.y >> finalCoords.x;
+    vector<vector<int>> graph(rows * columns, vector<int>(rows * columns, 0));
+    vector<bool> isUsed(rows * columns, false);
+    fillInAdjacencyGraph(graph, rows, columns);
+    breadthFirstSearch((startCoords.y - 1) * columns + startCoords.x - 1, graph, rows * columns,
+                       finalCoords.x + columns * (finalCoords.y - 1) - 1, rows, columns);
+}

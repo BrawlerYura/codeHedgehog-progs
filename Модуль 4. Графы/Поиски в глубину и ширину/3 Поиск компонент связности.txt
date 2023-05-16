@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void depthFirstSearch(int i, const vector<vector<int>>& adjacencyMatrix, vector<bool>& isUsed, int graphCount) {
+    isUsed[i] = true;
+    for (int j = 0; j < graphCount; j++) {
+        if(!isUsed[j] && adjacencyMatrix[i][j] != 0) {
+            depthFirstSearch(j, adjacencyMatrix, isUsed, graphCount);
+        }
+    }
+}
+
+int main() {
+    int graphCount, temp, count = 0, connectivityComponentsCount = 0;
+    cin >> graphCount;
+    vector<vector<int>> adjacencyMatrix(graphCount, vector<int>(graphCount));
+    vector<bool> isUsed(graphCount, false);
+    vector<int> connectivityComponentNumbers(graphCount, 0);
+    for (int i = 0; i < graphCount; i++) {
+        for (int j = 0; j < graphCount; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+    for (int i = 0; i < graphCount; i++) {
+        if (!isUsed[i]) {
+            depthFirstSearch(i, adjacencyMatrix, isUsed, graphCount);
+            connectivityComponentsCount++;
+            for (int j = 0; j < graphCount; j++) {
+                if (isUsed[j]) {
+                    connectivityComponentNumbers[j]++;
+                }
+            }
+        }
+    }
+    cout << connectivityComponentsCount << endl;
+    for(int i = 0; i < graphCount; i++) {
+        if(connectivityComponentNumbers[i] != 0) {
+            temp = connectivityComponentNumbers[i];
+        } else {
+            continue;
+        }
+        for(int j = 0; j < graphCount; j++) {
+            if(temp == connectivityComponentNumbers[j]) {
+                count++;
+            }
+        }
+        cout << count << " ";
+        for(int j = 0; j < graphCount; j++) {
+            if (temp == connectivityComponentNumbers[j]) {
+                connectivityComponentNumbers[j] = 0;
+                cout << j + 1 << " ";
+            }
+        }
+        cout << endl;
+        count = 0;
+    }
+}

@@ -1,0 +1,42 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+struct point {
+    double x = 0, y = 0;
+};
+
+struct vector {
+    point a;
+    point b;
+};
+
+vector vectorRotation(vector a, double b) {
+    vector c;
+    c.a.x = 0;
+    c.a.y = 0;
+    c.b.x = (a.b.x * cos(b)) - (a.b.y * sin(b));
+    c.b.y = (a.b.x * sin(b)) + (a.b.y * cos(b));
+    return c;
+}
+
+double angleOfTriangle(double lengthA, double lengthB, double lengthC) {
+    double cosA = (((-(lengthA * lengthA)) + (lengthC * lengthC) + (lengthB * lengthB)) / (2 * lengthC * lengthB));
+    double angleA = acos(cosA);
+    return angleA;
+}
+
+int main() {
+    double lengthAB, lengthAC, lengthBC;
+    cin >> lengthAB >> lengthAC >> lengthBC;
+    point a, b, c;
+    b.x = lengthAB;
+    double angleA = angleOfTriangle(lengthBC, lengthAB, lengthAC);
+    vector supportiveVector;
+    supportiveVector.b.x = lengthAC;
+    vector rotatedSupportiveVector = vectorRotation(supportiveVector, angleA);
+    c.x = rotatedSupportiveVector.b.x;
+    c.y = rotatedSupportiveVector.b.y;
+    printf("%.6f %.6f\n%.6f %.6f\n%.6f %.6f", a.x, a.y, b.x, b.y, c.x, c.y);
+}

@@ -1,0 +1,42 @@
+#include <iostream>
+
+using namespace std;
+//Помог сделать задачу Евчатов Иван
+struct Ingot {
+    int weight;
+    int value;
+};
+
+int main() {
+    int maxCapacity;
+    int ingotsLength;
+    int **arr;
+    Ingot *ingots;
+
+    cin >> ingotsLength >> maxCapacity;
+
+    ingots = new Ingot[ingotsLength]{};
+    for (int i = 1; i < ingotsLength + 1; i++) {
+        cin >> ingots[i].value;
+    }
+    for (int i = 1; i < ingotsLength + 1; i++) {
+        cin >> ingots[i].weight;
+    }
+
+
+    arr = new int *[ingotsLength + 1]{};
+    for (int i = 0; i < ingotsLength + 1; i++) {
+        arr[i] = new int[maxCapacity + 1]{};
+    }
+
+    for (int i = 1; i < ingotsLength + 1; i++) {
+        for (int j = 0; j < maxCapacity + 1; j++) {
+            arr[i][j] = arr[i - 1][j];
+            if (ingots[i].weight <= j) {
+                arr[i][j] = max(arr[i][j], arr[i - 1][j - ingots[i].weight] + ingots[i].value);
+            }
+        }
+    }
+
+    cout << arr[ingotsLength][maxCapacity] << endl;
+}

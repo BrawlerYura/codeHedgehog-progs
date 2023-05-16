@@ -1,0 +1,78 @@
+#include <iostream>
+
+int max(int first, int second)
+{
+    if (first >= second)
+    {
+        return first;
+    }
+    return second;
+}
+
+int coordinate_y = 0;
+int coordinate_x = 0;
+int check(int a, int b) {
+    if ((a < coordinate_y) && (b < coordinate_x)) {
+        return 1;
+    }
+    return 0;
+}
+
+int main()
+{
+    scanf("%d", &coordinate_y);
+    scanf("%d", &coordinate_x);
+
+    int** glade = new int* [coordinate_y];
+    for (int index_y = 0; index_y < coordinate_y; ++index_y) {
+        glade[index_y] = new int[coordinate_x];
+    }
+    int** glade_move = new int* [coordinate_y];
+    for (int index_y = 0; index_y < coordinate_y; ++index_y) {
+        glade_move[index_y] = new int[coordinate_x];
+    }
+
+    for (int index_y = 0; index_y < coordinate_y; ++index_y) {
+        for (int index_x = 0; index_x < coordinate_x; ++index_x) {
+            scanf("%d", &glade[index_y][index_x]);
+            glade_move[index_y][index_x] = -1;
+        }
+    }
+    glade_move[0][0] = 0;
+
+    int wundervariable = -1;
+    int stop = 1;
+
+    while (stop != 0) {
+        stop = 0;
+        ++wundervariable;
+
+        if (check((wundervariable + 1) * 2, wundervariable + 1) == 1) {
+            glade[(wundervariable + 1) * 2][wundervariable + 1] += glade[wundervariable * 2][wundervariable];
+            glade_move[(wundervariable + 1) * 2][wundervariable + 1] = 0;
+            stop = 1;
+        }
+
+        if (check(wundervariable + 1, (wundervariable + 1) * 2) == 1) {
+            glade[wundervariable + 1][(wundervariable + 1) * 2] += glade[wundervariable][wundervariable * 2];
+            glade_move[wundervariable + 1][(wundervariable + 1) * 2] = 0;
+            stop = 1;
+        }
+
+        for (int index = 1; index <= wundervariable; ++index) {
+            if (check(((wundervariable + 1) * 2) - index, (wundervariable + 1) + index) == 1) {
+                glade[((wundervariable + 1) * 2) - index][(wundervariable + 1) + index] += max(glade[((wundervariable + 1) * 2) - index - 1][(wundervariable + 1) + index - 2], glade[((wundervariable + 1) * 2) - index - 2][(wundervariable + 1) + index - 1]);
+                glade_move[((wundervariable + 1) * 2) - index][(wundervariable + 1) + index] = 0;
+                stop = 1;
+            }
+        }
+    }
+
+    if (glade_move[coordinate_y - 1][coordinate_x - 1] != -1) {
+        printf("%d", glade[coordinate_y - 1][coordinate_x - 1]);
+    }
+    else {
+        printf("-");
+    }
+    return 0;
+}

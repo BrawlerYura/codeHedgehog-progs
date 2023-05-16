@@ -1,0 +1,85 @@
+#include <iostream>
+
+using namespace std;
+
+struct Stack {
+    char* arr;
+    int top;
+
+    void push(char x);
+
+    char pop();
+
+    bool check();
+
+    bool isEmpty();
+
+    Stack() {
+        arr = new char[1000000];
+        top = -1;
+    }
+};
+
+void Stack::push(char x) {
+    arr[++top] = x;
+}
+
+char Stack::pop() {
+    if (isEmpty()) {
+        cout << '0';
+        exit;
+    }
+    return arr[top--];
+}
+
+bool Stack::isEmpty() {
+    return top == -1;
+}
+
+bool Stack::check() {
+    if (isEmpty()) {
+        cout << '0';
+        return false;
+    }
+    if (arr[top] == ']' && arr[top - 1] == '[') {
+        pop();
+        pop();
+    }
+    else if (arr[top] == '}' && arr[top - 1] == '{') {
+        pop();
+        pop();
+    }
+    else if (arr[top] == ')' && arr[top - 1] == '(') {
+        pop();
+        pop();
+    }
+    else if (arr[top] == '>' && arr[top - 1] == '<') {
+        pop();
+        pop();
+    }
+    else {
+        cout << '0';
+        return false;
+    }
+    return true;
+}
+
+int main() {
+    Stack stack;
+    string brackets;
+    bool flag;
+    cin >> brackets;
+    for (int i = 0; i < brackets.length(); i++) {
+        if (brackets[i] == '}' or brackets[i] == ']' or brackets[i] == ')' or brackets[i] == '>') {
+            stack.push(brackets[i]);
+            flag = stack.check();
+            if (!flag) {
+                return 0;
+            }
+        }
+        else {
+            stack.push(brackets[i]);
+        }
+    }
+    cout << '1';
+}

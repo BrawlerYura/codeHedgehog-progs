@@ -1,0 +1,153 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+const int FIELD_SIZE = 8;
+
+struct Coords {
+    int x = 0, y = 0;
+};
+
+void fillInAdjacencyGraph(vector<vector<int>> &graph, int n) {
+    Coords coords;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i + 2 < n) {
+                if (j + 1 < n) {
+                    graph[i * n + j][(i + 2) * n + j + 1] = 1;
+                    graph[(i + 2) * n + j + 1][i * n + j] = 1;
+                }
+                if (j - 1 >= 0) {
+                    graph[i * n + j][(i + 2) * n + j - 1] = 1;
+                    graph[(i + 2) * n + j - 1][i * n + j] = 1;
+                }
+            }
+            if (i - 2 >= 0) {
+                if (j + 1 < n) {
+                    graph[i * n + j][(i - 2) * n + j + 1] = 1;
+                    graph[(i - 2) * n + j + 1][i * n + j] = 1;
+                }
+                if (j - 1 >= 0) {
+                    graph[i * n + j][(i - 2) * n + j - 1] = 1;
+                    graph[(i - 2) * n + j - 1][i * n + j] = 1;
+                }
+            }
+            if (j + 2 < n) {
+                if (i + 1 < n) {
+                    graph[i * n + j][(i + 1) * n + j + 2] = 1;
+                    graph[(i + 1) * n + j + 2][i * n + j] = 1;
+                }
+                if (i - 1 >= 0) {
+                    graph[i * n + j][(i - 1) * n + j + 2] = 1;
+                    graph[(i - 1) * n + j + 2][i * n + j] = 1;
+                }
+            }
+            if (j - 2 >= 0) {
+                if (i + 1 < n) {
+                    graph[i * n + j][(i + 1) * n + j - 2] = 1;
+                    graph[(i + 1) * n + j - 2][i * n + j] = 1;
+                }
+                if (i - 1 >= 0) {
+                    graph[i * n + j][(i - 1) * n + j - 2] = 1;
+                    graph[(i - 1) * n + j - 2][i * n + j] = 1;
+                }
+            }
+        }
+    }
+}
+
+Coords findCoordsOfNode(int n, int node) {
+    Coords coords;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (node == i * n + j) {
+                coords.x = j + 1;
+                coords.y = i + 1;
+                return coords;
+            }
+        }
+    }
+}
+
+void printPath(int finalNode, vector<int> &previous, vector<int> &distance, int n) {
+    vector<int> path;
+    int temp = finalNode;
+    path.push_back(temp);
+    
+    while (previous[temp] != -1) {
+        temp = previous[temp];
+        path.insert(path.begin(), temp);
+    }
+    
+    cout << (distance[finalNode] + 1) / 2 << endl;
+    Coords coords;
+    
+    for (int i = 1; i < path.size() / 2 + 1; i++) {
+        
+        coords = findCoordsOfNode(n, path[i]);
+        cout << coords.x << " " << coords.y << " ";
+        
+        coords = findCoordsOfNode(n, path[path.size() - i - 1]);
+        cout << coords.x << " " << coords.y << endl;
+    }
+}
+
+void
+breadthFirstSearch(int startNode, vector<vector<int>> &adjacencyMatrix, int graphSize, int finalNode, int n) {
+    
+    int temp;
+    vector<bool> isUsed(graphSize, false);
+    vector<int> previous(graphSize, -1);
+    vector<int> distance(graphSize, -1);
+
+    if (startNode == finalNode) {
+        cout << "0";
+        return;
+    }
+    if (finalNode >= n * n || startNode >= n * n) {
+        cout << -1;
+        return;
+    }
+
+    vector<int> queue;
+    queue.push_back(startNode);
+    isUsed[startNode] = true;
+    while (!queue.empty()) {
+        temp = queue[0];
+        queue.erase(queue.begin());
+        for (int j = 0; j < graphSize; j++) {
+            if (!isUsed[j] && adjacencyMatrix[temp][j] != 0) {
+                queue.push_back(j);
+                isUsed[j] = true;
+                distance[j] = distance[temp] + 1;
+                previous[j] = temp;
+                if (distance[finalNode] % 2 == 0 && isUsed[finalNode]) {
+                    isUsed[finalNode] = false;
+                    queue.pop_back();
+                }
+            }
+        }
+    }
+
+    if (distance[finalNode] == -1) {
+        cout << -1;
+        return;
+    } else if (distance[finalNode] % 2 == 0) {
+        cout << -1;
+    } else {
+        printPath(finalNode, previous, distance, n);
+    }
+}
+
+int main() {
+    int n = FIELD_SIZE;
+    Coords startCoords;
+    Coords finalCoords;
+    cin >> startCoords.x >> startCoords.y >> finalCoords.x >> finalCoords.y;
+    vector<vector<int>> graph(n * n, vector<int>(n * n, 0));
+    vector<bool> isUsed(n * n, false);
+    fillInAdjacencyGraph(graph, n);
+    breadthFirstSearch((startCoords.y - 1) * n + startCoords.x - 1, graph, n * n,
+                       finalCoords.x + n * (finalCoords.y - 1) - 1, n);
+}

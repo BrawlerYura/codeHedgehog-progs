@@ -1,0 +1,46 @@
+#include <iostream>
+
+using namespace std;
+int Shift(int l, int r, int v1, int v2){
+    int mid, v;
+    while(r - l > 1){
+        mid = (l + r) / 2;
+        cout << "? " << mid << endl;
+        cout.flush();
+        cin >> v;
+        if(v > v1 && v > v2){
+            l = mid;
+            v1 = v;
+        }
+        else if(v < v1 && v < v2) {
+            r = mid;
+            v2 = v;
+        }
+        else if(v == v1 || v == v2)
+            break;
+    }
+    return r;
+}
+
+int main() {
+    int n, m, r, l, v1, v2, sheesh, rv;
+    cin >> n;
+    cout << "? 1" << endl;
+    cout.flush();
+    cin >> v1;
+    cout << "? " << n << endl;
+    cout.flush();
+    cin >> v2;
+    l = 1;
+    r = n;
+    if(v1 > v2){
+        sheesh = Shift(l, r, v1, v2);
+    }
+    else{
+        cout << "! 0" << endl;
+        cout.flush();
+        return 0;
+    }
+    cout << "! " << sheesh - 1 << endl;
+    cout.flush();
+}

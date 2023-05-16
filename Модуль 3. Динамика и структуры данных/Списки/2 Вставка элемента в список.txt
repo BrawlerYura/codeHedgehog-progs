@@ -1,0 +1,104 @@
+#include <iostream>
+
+using namespace std;
+
+//Не списывал у симпл код, методы писал сам, а структуры да, позаимствовал!!!
+struct List {
+    void pushBack(int data);
+
+    void printList();
+
+    void putIn(int newData, int index);
+
+    int pop();
+
+    List() {
+        head = nullptr;
+        listSize = 0;
+    };
+
+    struct Node {
+        Node *nextAddress;
+        int data;
+
+        Node(int data = 0, Node *nextAddress = nullptr) {
+            this->data = data;
+            this->nextAddress = nextAddress;
+        }
+    };
+
+    Node *head;
+    Node *tail;
+    int listSize;
+
+    Node *findNode(int index);
+};
+
+void List::pushBack(int data) {
+    Node *newNode = new Node(data);
+    if (head == nullptr) {
+        head = newNode;
+        tail = newNode;
+    } else {
+        tail->nextAddress = newNode;
+        tail = newNode;
+    }
+    listSize++;
+};
+
+void List::printList() {
+    Node *current = this->head;
+    cout << current->data << " ";
+    while (current->nextAddress != nullptr) {
+        current = current->nextAddress;
+        cout << current->data << " ";
+    }
+}
+
+List::Node *List::findNode(int index) {
+    Node *current = head;
+    for (int i = 0; i < index - 2; i++) {
+        current = current->nextAddress;
+    }
+    return current;
+}
+
+int List::pop() {
+    Node *current = findNode(listSize);
+    current->nextAddress = nullptr;
+    listSize--;
+    int popData = tail->data;
+    tail = current;
+    return popData;
+}
+
+void List::putIn(int newData, int index) {
+    if (index == 1) {
+        Node *newNode = new Node;
+        newNode->data = head->data;
+        newNode->nextAddress = head->nextAddress;
+        head->nextAddress = newNode;
+        head->data = newData;
+    } else if (index == listSize + 1) {
+        pushBack(newData);
+    } else {
+        Node *newNode = new Node(newData);
+        Node *current = findNode(index);
+        newNode->nextAddress = current->nextAddress;
+        current->nextAddress = newNode;
+        newNode->data = newData;
+        listSize++;
+    }
+}
+
+int main() {
+    List List;
+    int data, index;
+    while (cin >> data) {
+        List.pushBack(data);
+    }
+    index = List.pop();
+    data = List.pop();
+    List.putIn(data, index);
+    List.printList();
+}

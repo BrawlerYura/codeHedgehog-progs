@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+bool check(vector<vector<int>>& matrix, int n, int currentColour, vector<int>& colour, int currentVertex) {
+    for(int i = 0; i < n; i++) {
+        if(matrix[currentVertex][i] == 1 && currentColour == colour[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool recursiveColoring(vector<vector<int>>& matrix, int n, int k, vector<int>& colour, int currentVertex) {
+    bool flag = true;
+    for(int i = 0; i < n; i++) {
+        if(colour[i] == -1) {
+            flag = false;
+            break;
+        }
+    }
+    if(flag) {
+        return true;
+    }
+
+    for(int i = 0; i < n; i++) {
+        if(matrix[currentVertex][i] == 1 && colour[i] == -1) {
+            for(int j = 0; j < k; j++) {
+                if(check(matrix, n, j, colour, i)) {
+                    colour[i] = j;
+                    if(recursiveColoring(matrix, n, k, colour, i)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+    return false;
+}
+
+void graphColorize(vector<vector<int>>& matrix, int matrixSize, int k) {
+    vector<int> colour (matrixSize, -1);
+    colour[0] = 0;
+
+    if(!recursiveColoring(matrix, matrixSize, k, colour,  0)) {
+        cout << "NO";
+    } else {
+        cout << "YES";
+    }
+}
+
+int main() {
+    int matrixSize, k;
+    cin >> matrixSize >> k;
+    vector<vector<int>> matrix(matrixSize, vector<int>(matrixSize));
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            cin >> matrix[i][j];
+        }
+    }
+    graphColorize(matrix, matrixSize, k);
+}

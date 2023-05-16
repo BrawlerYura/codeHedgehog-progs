@@ -1,0 +1,33 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void depthFirstSearch(int i, const vector<vector<int>>& adjacencyMatrix, vector<bool>& isUsed, int graphCount) {
+    isUsed[i] = true;
+    for (int j = 0; j < graphCount; j++) {
+        if(!isUsed[j] && adjacencyMatrix[i][j] != 0) {
+            depthFirstSearch(j, adjacencyMatrix, isUsed, graphCount);
+        }
+    }
+}
+
+int main() {
+    int graphCount;
+    cin >> graphCount;
+    int someVertexOfConnectivityComponent;
+    cin >> someVertexOfConnectivityComponent;
+    vector<vector<int>> adjacencyMatrix(graphCount, vector<int>(graphCount));
+    vector<bool> isUsed(graphCount, false);
+    for (int i = 0; i < graphCount; i++) {
+        for (int j = 0; j < graphCount; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+    depthFirstSearch(someVertexOfConnectivityComponent - 1, adjacencyMatrix, isUsed, graphCount);
+    for(int i = 0; i < graphCount; i++) {
+        if (isUsed[i]) {
+            cout << i + 1 << " ";
+        }
+    }
+}

@@ -1,0 +1,53 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+
+class Program
+{
+    const double EPS = 0.0000000001;
+    const double DECREASE_TEMPERATURE = 0.99;
+
+    static double calculateChance(double temperature, double currentValue, double previousValue)
+    {
+        return Math.Exp((previousValue - currentValue) / temperature);
+    }
+
+    static void Main()
+    {
+        double previousValue = 0, currentValue = 0;
+        double temperature = Math.Pow(10, 40);
+        double minValue = Double.MaxValue;
+        double previousX = 0, currentX = 0, result = 0;
+        Random rand = new Random();
+
+        while (temperature >= EPS) {
+            currentX = previousX + rand.NextDouble() * 200 - 100;
+
+            Console.WriteLine("? " + currentX);
+            Console.Out.Flush();
+            currentValue = double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+
+            if(calculateChance(temperature, currentValue, previousValue) > rand.NextDouble() | currentValue <= previousValue)
+            {
+                previousValue = currentValue;
+                previousX = currentX;
+            }
+
+            if(previousValue <= minValue) {
+                minValue = previousValue;
+                result = previousX;
+            }
+
+            temperature *= DECREASE_TEMPERATURE;
+        }
+
+        Console.WriteLine("! " + result);
+        Console.Out.Flush();
+    }
+}

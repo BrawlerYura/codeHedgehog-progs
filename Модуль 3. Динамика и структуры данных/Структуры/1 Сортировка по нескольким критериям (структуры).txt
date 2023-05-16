@@ -1,0 +1,63 @@
+#include <iostream>
+
+using namespace std;
+
+struct Result {
+    int solved;
+    int time;
+    int index;
+};
+
+bool comparison(Result *team, int index, int largest) {
+    if (team[index].solved < team[largest].solved ||
+        (team[index].solved == team[largest].solved && team[index].time > team[largest].time) ||
+        (team[index].solved == team[largest].solved && team[index].time == team[largest].time &&
+         team[index].index > team[largest].index)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void heapify(int number, int i, Result *team) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+    if (l < number && comparison(team, l, largest))
+        largest = l;
+    if (r < number && comparison(team, r, largest))
+        largest = r;
+    if (largest != i) {
+        swap(team[i].solved, team[largest].solved);
+        swap(team[i].time, team[largest].time);
+        swap(team[i].index, team[largest].index);
+        heapify(number, largest, team);
+    }
+}
+
+void heapSort(int number, Result *team) {
+    for (int i = number / 2 - 1; i >= 0; i--) {
+        heapify(number, i, team);
+    }
+    for (int i = number - 1; i >= 0; i--) {
+        swap(team[0].solved, team[i].solved);
+        swap(team[0].time, team[i].time);
+        swap(team[0].index, team[i].index);
+        heapify(i, 0, team);
+    }
+}
+
+int main() {
+    int number;
+    cin >> number;
+    Result *team = new Result[number];
+    for (int i = 0; i < number; i++) {
+        cin >> team[i].solved;
+        cin >> team[i].time;
+        team[i].index = i + 1;
+    }
+    heapSort(number, team);
+    for (int i = 0; i < number; i++) {
+        printf("%d ", team[i].index);
+    }
+}

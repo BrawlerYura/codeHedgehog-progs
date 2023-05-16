@@ -1,0 +1,38 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection.Emit;
+using System.Text.RegularExpressions;
+
+class Program
+{
+    static void Main()
+    {
+        while (true)
+        {
+            string text = Console.ReadLine();
+            if (text == null)
+            {
+                break;
+            }
+
+            string parenthesesSequence = @"?>\((?<LEVEL>)(?<CURRENT>)|(?=\))(?<LAST-CURRENT>)(?(?<=\(\k<LAST>)(?<-LEVEL>\)))";
+            string curlyBracketsSequence = @"\{(?<LEVEL>)(?<CURRENT>)|(?=\})(?<LAST-CURRENT>)(?(?<=\{\k<LAST>)(?<-LEVEL>\}))";
+            Regex correctBrackets = new Regex($@"({parenthesesSequence}|{curlyBracketsSequence}|[^\(\)" + @"\{\}" + @"]*)*(?(LEVEL)(?!))");
+            MatchCollection correctBracketsMatches = correctBrackets.Matches(text);
+
+            for(int i = 0; i < correctBracketsMatches.Count(); i++)
+            {
+                Regex regex = new Regex(@"(\(.*\))*(\{.*\})*");
+                MatchCollection matches = regex.Matches(correctBracketsMatches[i].ToString());
+                for(int j = 0; j < matches.Count(); j++)
+                {
+                    Console.WriteLine(matches[j]);
+                }
+            }
+        }
+    }
+}

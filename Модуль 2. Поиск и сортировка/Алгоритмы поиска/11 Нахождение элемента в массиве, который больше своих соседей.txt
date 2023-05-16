@@ -1,0 +1,53 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int n, l, r, mid, v1, v2, v3;
+    cin >> n;
+    cout << "? 1" << endl;
+    cout.flush();
+    cin >> v1;
+    cout << "? 2" << endl;
+    cout.flush();
+    cin >> v2;
+    if(v1 > v2){
+        cout << "! 1" << endl;
+        cout.flush();
+        return 0;
+    }
+    cout << "? " << n << endl;
+    cout.flush();
+    cin >> v1;
+    cout << "? " << n - 1 << endl;
+    cout.flush();
+    cin >> v2;
+    if(v1 > v2){
+        cout << "! " << n << endl;
+        cout.flush();
+        return 0;
+    }
+    l = 1;
+    r = n;
+    while (l <= r){
+        mid = (r + l) / 2;
+        cout << "? " << mid << endl;
+        cout.flush();
+        cin >> v1;
+        cout << "? " << mid + 1 << endl;
+        cout.flush();
+        cin >> v2;
+        cout << "? " << mid - 1 << endl;
+        cout.flush();
+        cin >> v3;
+        if(v1 > v2 && v1 > v3) {
+            cout << "! " << mid << endl;
+            cout.flush();
+            return 0;
+        }
+        else if(v1 > v2 && v1 < v3)
+            r = mid;
+        else
+            l = mid;
+    }
+}

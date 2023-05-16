@@ -1,0 +1,111 @@
+#include <iostream>
+
+using namespace std;
+
+struct List {
+
+    void push(char data, int side);
+
+    void check(int side);
+
+    void pop(int side);
+
+    List() {
+        head = nullptr;
+        listSize = 0;
+    };
+
+    struct Node {
+        Node *nextAddress;
+        Node *previousAddress;
+        char data;
+
+        Node(char data = 'S', Node *nextAddress = nullptr, Node *previousAddress = nullptr) {
+            this->data = data;
+            this->nextAddress = nextAddress;
+            this->previousAddress = previousAddress;
+        }
+    };
+
+    Node *head;
+    Node *last;
+    int listSize;
+
+    void printList();
+};
+
+void List::pop(int side) {
+    if(listSize > 3) {
+        if (side == 1) {
+            head = head->nextAddress->nextAddress->nextAddress;
+            head->previousAddress = nullptr;
+            listSize -= 3;
+        } else {
+            last = last->previousAddress->previousAddress->previousAddress;
+            last->nextAddress = nullptr;
+            listSize -= 3;
+        }
+    } else {
+        head = nullptr;
+        last = nullptr;
+        listSize = 0;
+    }
+}
+
+void List::check(int side) {
+    if(listSize > 2) {
+        if (side == 1) {
+            if (head->data == head->nextAddress->data && head->data == head->nextAddress->nextAddress->data) {
+                pop(side);
+            }
+        } else {
+            if (last->data == last->previousAddress->data && last->data == last->previousAddress->previousAddress->data) {
+                pop(side);
+            }
+        }
+    }
+}
+
+void List::push(char data, int side) {
+    Node *newNode = new Node(data);
+    if (head == nullptr) {
+        head = newNode;
+        last = newNode;
+    } else if (side == 2) {
+        last->nextAddress = newNode;
+        newNode->previousAddress = last;
+        last = newNode;
+    } else {
+        head->previousAddress = newNode;
+        newNode->nextAddress = head;
+        head = newNode;
+    }
+    listSize++;
+    check(side);
+};
+
+void List::printList() {
+    if(head == nullptr) {
+        cout << "-1";
+        return;
+    }
+    Node *current = this->head;
+    cout << current->data << " ";
+    while (current->nextAddress != nullptr) {
+        current = current->nextAddress;
+        cout << current->data << " ";
+    }
+}
+
+int main() {
+    List thread;
+    int operations;
+    cin >> operations;
+    int side;
+    char colour;
+    for (int i = 0; i < operations; i++) {
+        cin >> side >> colour;
+        thread.push(colour, side);
+    }
+    thread.printList();
+}

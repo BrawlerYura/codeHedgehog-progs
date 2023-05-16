@@ -1,0 +1,51 @@
+#include <iostream>
+
+using namespace std;
+int n;
+int Compare(string a, string b) {
+    if (a + b <= b + a)
+        return 1;
+    else
+        return 0;
+}
+void Merge(string* abc, int first, int last)
+{
+    int mid, start, final;
+    string temp[n];
+    mid = (first + last) / 2;
+    start = first;
+    final = mid + 1;
+    for (int j = first; j <= last; j++) {
+        if ((start <= mid) && ((final > last) || Compare(abc[start], abc[final]) == 0)) {
+            temp[j] = abc[start];
+            start++;
+        }
+        else {
+            temp[j] = abc[final];
+            final++;
+        }
+    }
+    for (int j = first; j <= last; j++)
+        abc[j] = temp[j];
+}
+void MergeSort(string* abc, int first, int last)
+{
+    {
+        if (first < last)
+        {
+            MergeSort(abc, first, (first + last) / 2);
+            MergeSort(abc, (first + last) / 2 + 1, last);
+            Merge(abc, first, last);
+        }
+    }
+}
+int main() {
+    scanf("%d", &n);
+    string* abc = new string[n];
+    for (int i = 0; i < n; i++) {
+        cin >> abc[i];
+    }
+    MergeSort(abc, 0, n - 1);
+    for (int i = 0; i < n; i++)
+        cout << abc[i];
+}

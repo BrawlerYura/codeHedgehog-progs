@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+
+class Program
+{
+    static void Main()
+    {
+        string text = "";
+        while (true)
+        {
+            string temp = Console.ReadLine();
+            if (temp == null)
+            {
+                break;
+            }
+            else
+            {
+                temp = stringNormalizer(temp);
+                text += temp + "\n";
+            }
+        }
+        printSimilarLines(text);
+    }
+
+    static void printSimilarLines(string text)
+    {
+        string[] lines = text.Split('\n');
+        double[,] count = new double[lines.Length, lines.Length];
+        for (int i = 0; i < lines.Length; i++)
+        {
+            for (int j = 0; j < lines.Length; j++)
+            {
+                count[i, j] = 0;
+            }
+        }
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            for (int j = i + 1; j < lines.Length; j++)
+            {
+                string[] wordsOfFirstLine = lines[i].Split(' ');
+                string[] wordsOfSecondLine = lines[j].Split(' ');
+                for (int k = 0; k < wordsOfFirstLine.Length; k++)
+                {
+                    for (int m = 0; m < wordsOfSecondLine.Length; m++)
+                    {
+                        if (isCoefficientHigh(wordsOfFirstLine[k], wordsOfSecondLine[m]))
+                        {
+                            count[i, j]++;
+                            count[j, i]++;
+                        }
+                    }
+                }
+                double result = count[i, j] / (wordsOfFirstLine.Length + wordsOfSecondLine.Length - count[i, j]);
+                if (result > 0.25)
+                {
+                    Console.WriteLine(i + 1 + " " + (j + 1));
+                }
+            }
+        }
+    }
+
+    static bool isCoefficientHigh(string firstWord, string secondWord)
+    {
+        double count = 0;
+
+        for (int i = 0; i < Math.Min(firstWord.Length, secondWord.Length); i++)
+        {
+            if (firstWord[i] == secondWord[i])
+            {
+                count++;
+            }
+        }
+
+        double result = count / (firstWord.Length + secondWord.Length - count);
+        return result > 0.45;
+    }
+
+    static string stringNormalizer(string text)
+    {
+        text = text.ToLower();
+        text = Regex.Replace(text, @"[^a-z0-9\s]", "");
+        text = Regex.Replace(text, @"\b[a-z0-9]{1,3}\b", "");
+        text = Regex.Replace(text, @"\s{2,}", " ");
+        text = text.TrimStart();
+        return text;
+    }
+}

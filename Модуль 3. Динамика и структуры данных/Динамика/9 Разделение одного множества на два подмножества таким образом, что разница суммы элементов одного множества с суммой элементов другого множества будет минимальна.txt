@@ -1,0 +1,52 @@
+#include <iostream>
+
+using namespace std;
+
+struct Item {
+    int weight;
+    int value;
+    Item(int weight = 0, int value = 0) {
+        this->weight = weight;
+        this->value = value;
+    }
+};
+
+int backpack(Item *items, int length, int itemsLength) {
+    int **arr;
+    arr = new int *[itemsLength + 1];
+    for (int i = 0; i < itemsLength + 1; i++) {
+        arr[i] = new int[length + 1];
+    }
+    for (int i = 0; i < itemsLength + 1; i++) {
+        for (int j = 0; j < length + 1; j++) {
+            if (i == 0 || j == 0) {
+                arr[i][j] = 0;
+            } else {
+                if (items[i - 1].weight > j) {
+                    arr[i][j] = arr[i - 1][j];
+                } else {
+                    int pre = arr[i - 1][j];
+                    int alterItem = items[i - 1].value + arr[i - 1][j - items[i - 1].weight];
+                    arr[i][j] = max(pre, alterItem);
+                }
+            }
+        }
+    }
+    return arr[itemsLength][length];
+}
+
+int main() {
+    Item *items;
+    int sum = 0;
+    int itemsLength;
+    cin >> itemsLength;
+    items = new Item[itemsLength];
+    for (int i = 0; i < itemsLength; i++) {
+        cin >> items[i].weight;
+        items[i].value = items[i].weight;
+        sum += items[i].weight;
+    }
+    int halfSum = backpack(items, sum / 2, itemsLength);
+    cout << sum - (2 * halfSum) << endl;
+    return 0;
+}

@@ -1,0 +1,60 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+void gamilton(int current, vector<int> &path, vector<bool> &isVisited, vector<vector<int>> &matrix, int n, vector<int> &mainPath) {
+    path.push_back(current);
+    if (path.size() == n) {
+        if(mainPath[0] != INT_MAX) {
+            int pathCost = 0;
+            for (int i = 0; i < n - 1; i++) {
+                pathCost += matrix[path[i]][path[i + 1]];
+            }
+            int mainPathCost = 0;
+            for (int i = 0; i < n - 1; i++) {
+                mainPathCost += matrix[mainPath[i]][mainPath[i + 1]];
+            }
+            if(pathCost < mainPathCost) {
+                mainPath = path;
+            }
+        } else {
+            mainPath = path;
+        }
+    }
+    isVisited[current] = true;
+    for (int i = 0; i < n; i++) {
+        if (matrix[current][i] != 0 && !isVisited[i]) {
+            gamilton(i, path, isVisited, matrix, n, mainPath);
+        }
+    }
+    isVisited[current] = false;
+    path.pop_back();
+}
+
+int main() {
+    int matrixSize;
+    cin >> matrixSize;
+    vector<vector<int>> adjacencyMatrix(matrixSize, vector<int>(matrixSize));
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+    vector<bool> isVisited(matrixSize, false);
+    vector<int> path;
+    vector<int> mainPath(matrixSize, INT_MAX);
+    for(int i = 0; i < matrixSize; i++) {
+        gamilton(i, path, isVisited, adjacencyMatrix, matrixSize, mainPath);
+    }
+
+    int mainPathCost = 0;
+    for (int i = 0; i < matrixSize - 1; i++) {
+        mainPathCost += adjacencyMatrix[mainPath[i]][mainPath[i + 1]];
+    }
+    cout << mainPathCost << endl;
+    for(int i = 0; i < mainPath.size(); i++) {
+        cout << mainPath[i] + 1 << " ";
+    }
+}

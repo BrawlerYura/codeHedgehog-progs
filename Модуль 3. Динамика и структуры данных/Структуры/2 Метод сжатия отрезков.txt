@@ -1,0 +1,46 @@
+#include <iostream>
+
+using namespace std;
+
+struct BusStations {
+    int firstStation, lastStation;
+
+    void setStations(int firstStation, int lastStation) {
+        if (firstStation < lastStation) {
+            this->firstStation = firstStation;
+            this->lastStation = lastStation;
+        } else {
+            this->firstStation = lastStation;
+            this->lastStation = firstStation;
+        }
+    }
+};
+
+int numberOfIdenticalStations(BusStations firstBus, BusStations secondBus) {
+    if(firstBus.lastStation < secondBus.firstStation || secondBus.lastStation < firstBus.firstStation){
+        return 0;
+    }
+    if (firstBus.firstStation <= secondBus.firstStation) {
+        if (firstBus.lastStation <= secondBus.lastStation) {
+            return firstBus.lastStation - secondBus.firstStation + 1;
+        } else {
+            return secondBus.lastStation - secondBus.firstStation + 1;
+        }
+    } else {
+        if (firstBus.lastStation <= secondBus.lastStation) {
+            return firstBus.lastStation - firstBus.firstStation + 1;
+        } else {
+            return secondBus.lastStation - firstBus.firstStation + 1;
+        }
+    }
+}
+
+int main() {
+    int firstStation, lastStation;
+    BusStations firstBus, secondBus;
+    cin >> firstStation >> lastStation;
+    firstBus.setStations(firstStation, lastStation);
+    cin >> firstStation >> lastStation;
+    secondBus.setStations(firstStation, lastStation);
+    cout << numberOfIdenticalStations(firstBus, secondBus);
+}

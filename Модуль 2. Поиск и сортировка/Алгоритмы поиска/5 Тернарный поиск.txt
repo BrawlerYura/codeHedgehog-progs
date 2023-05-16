@@ -1,0 +1,26 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+int main() {
+    int vp, vf;
+    double eps = 1e-10;
+    double y, r = 1, l = 0, t1, t2;
+    cin >> vp >> vf >> y;
+    while (r - l > eps){
+        t1 = (pow((l+(r - l)/3)*(l+(r - l)/3) + (1 - y)*(1 - y) , 0.5) / vp) + (pow((1 - (l+(r - l)/3))*(1 - (l+(r - l)/3)) + y*y, 0.5) / vf);
+        t2 = (pow((r-(r - l)/3)*(r-(r - l)/3) + (1 - y)*(1 - y) , 0.5) / vp) + (pow((1 - (r-(r - l)/3))*(1 - (r-(r - l)/3)) + y*y, 0.5) / vf);
+        if(t1 < t2){
+            r = (r-(r - l)/3);
+        }
+        else if(t1 > t2){
+            l = (l+(r - l)/3);
+        }
+        else{
+            l = (l+(r - l)/3);
+            r = (r-(r - l)/3);
+        }
+    }
+    printf("%.9f\n", r);
+}

@@ -1,0 +1,22 @@
+#include <iostream>
+using namespace std;
+void grasshopper(long long *array, long long n) {
+    for (int i = n; i >= 0; i--) {
+        array[i] += max(array[i + 2], array[i + 3]);
+    }
+}
+
+int main()
+{
+    long long n, result;
+    cin >> n;
+    long long* array = new long long[n];
+    for (int i = 0; i < n; i++) {
+        cin >> array[i];
+    }
+    array[n - 3] = array[n - 1] + array[n - 3];
+    array[n - 4] = array[n - 1] + array[n - 4];
+    array[n - 5] = array[n - 3] + array[n - 5];
+    grasshopper(array, n - 6);
+    cout << array[0];
+}

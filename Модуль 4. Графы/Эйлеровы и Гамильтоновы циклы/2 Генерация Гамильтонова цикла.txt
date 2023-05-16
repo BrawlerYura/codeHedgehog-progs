@@ -1,0 +1,49 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int gamilton(int current, vector<int> &path, vector<bool> &isVisited, vector<vector<int>> &matrix, int n) {
+    path.push_back(current);
+    if (path.size() == n) {
+        if (matrix[path[0]][path.back()] == 1) {
+            return true;
+        } else {
+            path.pop_back();
+            return false;
+        }
+    }
+    isVisited[current] = true;
+    for (int i = 0; i < n; i++) {
+        if (matrix[current][i] == 1 && !isVisited[i]) {
+            if (gamilton(i, path, isVisited, matrix, n)) {
+                return true;
+            }
+        }
+    }
+    isVisited[current] = false;
+    path.pop_back();
+    return false;
+}
+
+int main() {
+    int matrixSize, start;
+    cin >> matrixSize >> start;
+    vector<vector<int>> adjacencyMatrix(matrixSize, vector<int>(matrixSize));
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+    vector<bool> isVisited(matrixSize, false);
+    vector<int> path;
+
+    if (gamilton(start - 1, path, isVisited, adjacencyMatrix, matrixSize)) {
+        for (int i = 0; i < matrixSize; i++) {
+            cout << path[i] + 1 << " ";
+        }
+        cout << path[0] + 1;
+    } else {
+        cout << "-1";
+    }
+}

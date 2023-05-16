@@ -1,0 +1,144 @@
+#include <iostream>
+
+using namespace std;
+
+struct Tree {
+    Tree(int numberOfNodes) {
+        root = nullptr;
+        currentParent = root;
+        array = new TreeNode *[numberOfNodes];
+        currentIndex = 0;
+    }
+
+    struct TreeNode {
+        int data;
+        int index;
+        TreeNode *leftChild;
+        TreeNode *rightChild;
+        TreeNode *parent;
+
+        TreeNode(int data = 0, int index = 0, TreeNode *leftChild = nullptr,
+                 TreeNode *rightChild = nullptr, TreeNode *parent = nullptr) {
+            this->data = data;
+            this->index = index;
+            this->leftChild = leftChild;
+            this->rightChild = rightChild;
+            this->parent = parent;
+        }
+    };
+
+    void AddNode(int data, int parentIndex);
+
+    TreeNode *findParent(int parentIndex);
+
+    TreeNode *printTree(TreeNode *current, string move);
+
+    TreeNode *root;
+    TreeNode *currentParent;
+    TreeNode **array = new TreeNode *;
+    int currentIndex;
+};
+
+Tree::TreeNode *Tree::findParent(int parentIndex) {
+    int i = 0;
+    while (array[i] != nullptr) {
+        if (array[i]->index == parentIndex) {
+            return array[i];
+        }
+        i++;
+    }
+}
+
+void Tree::AddNode(int data, int parentIndex) {
+    Tree::TreeNode *newNode = new Tree::TreeNode;
+    newNode->data = data;
+    if (parentIndex == 0) {
+        root = newNode;
+        root->index = 1;
+        array[0] = root;
+        currentParent = root;
+        ++currentIndex;
+    } else {
+        currentParent = findParent(parentIndex);
+        if (currentParent->leftChild == nullptr) {
+            currentParent->leftChild = newNode;
+            newNode->index = ++currentIndex;
+            newNode->parent = currentParent;
+            array[newNode->index - 1] = newNode;
+        } else {
+            currentParent->rightChild = newNode;
+            newNode->index = ++currentIndex;
+            newNode->parent = currentParent;
+            array[newNode->index - 1] = newNode;
+        }
+    }
+}
+
+Tree::TreeNode *Tree::printTree(TreeNode *current, string move) {
+    if(current == nullptr) {
+        cout << "empty" << endl;
+        return current;
+    } else if(move == "right") {
+        if(current->rightChild != nullptr) {
+            current = current->rightChild;
+            if(current->data == -1) {
+                cout << "empty" << endl;
+                return current;
+            }else {
+                cout << current->data << endl;
+                return current;
+            }
+        } else {
+            cout << "empty" << endl;
+            current = nullptr;
+            return current;
+        }
+    } else {
+        if(current->leftChild != nullptr) {
+            current = current->leftChild;
+            if(current->data == -1) {
+                cout << "empty" << endl;
+                return current;
+            }else {
+                cout << current->data << endl;
+                return current;
+            }
+        } else {
+            cout << "empty" << endl;
+            current = nullptr;
+            return current;
+        }
+    }
+}
+
+int main() {
+    int numberOfNodes, data, parentIndex = 1, moves;
+    cin >> numberOfNodes;
+    Tree tree(numberOfNodes);
+    cin >> data;
+    tree.AddNode(data, 0);
+    for (int i = 1; i < numberOfNodes; i++) {
+        cin >> data;
+        tree.AddNode(data, parentIndex);
+        if(i % 2 == 0) {
+            parentIndex++;
+        }
+    }
+    cin >> moves;
+    Tree::TreeNode *current = new Tree::TreeNode;
+    current = tree.root;
+    string move;
+    if(tree.root != nullptr) {
+        if(tree.root->data == -1) {
+            cout << "empty" << endl;
+        } else {
+            cout << tree.root->data << endl;
+        }
+    } else {
+        cout << "empty" << endl;
+    }
+    for(int i = 0; i < moves; i++) {
+        cin >> move;
+        current = tree.printTree(current, move);
+    }
+}

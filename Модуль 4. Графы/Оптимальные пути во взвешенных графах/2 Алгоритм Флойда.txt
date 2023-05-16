@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+void floydsAlg(vector<vector<int>> &matrix, int n, int s, int f) {
+    vector<vector<int> > distanceMatrix = matrix;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (distanceMatrix[i][j] == -1) {
+                distanceMatrix[i][j] = INT_MAX;
+            }
+        }
+    }
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (distanceMatrix[i][k] < INT_MAX && distanceMatrix[k][j] < INT_MAX &&
+                    distanceMatrix[i][k] + distanceMatrix[k][j] < distanceMatrix[i][j]) {
+                    distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];
+                }
+            }
+        }
+    }
+    if (distanceMatrix[s][f] == -1) {
+        cout << -1;
+    } else {
+        cout << distanceMatrix[s][f];
+    }
+}
+
+int main() {
+    int matrixSize, start, finish;
+    cin >> matrixSize >> start >> finish;
+    vector<vector<int>> adjacencyMatrix(matrixSize, vector<int>(matrixSize));
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+
+    floydsAlg(adjacencyMatrix, matrixSize, start - 1, finish - 1);
+}

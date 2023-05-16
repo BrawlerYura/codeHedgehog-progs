@@ -1,0 +1,56 @@
+#include <iostream>
+
+using namespace std;
+//Помог с идеей Иван Евчатов
+struct Item {
+    int weight;
+    int value;
+};
+
+int backpack(Item *items, int length, int itemsLength) {
+    int **arr;
+    arr = new int *[itemsLength + 1];
+    for (int i = 0; i < itemsLength + 1; i++) {
+        arr[i] = new int[length + 1];
+    }
+    for (int i = 0; i < itemsLength + 1; i++) {
+        for (int j = 0; j < length + 1; j++) {
+            if (i == 0 || j == 0) {
+                arr[i][j] = 0;
+            } else {
+                if (items[i - 1].weight > j) {
+                    arr[i][j] = arr[i - 1][j];
+                } else {
+                    int pre = arr[i - 1][j];
+                    int alterItem = items[i - 1].value + arr[i - 1][j - items[i - 1].weight];
+                    arr[i][j] = max(pre, alterItem);
+                }
+            }
+        }
+    }
+    return arr[itemsLength][length];
+}
+
+int main() {
+    Item *items;
+    int sum = 0, half, neededSum;
+    int itemsLength;
+    cin >> itemsLength >> neededSum;
+    items = new Item[itemsLength];
+    for (int i = 0; i < itemsLength; i++) {
+        cin >> items[i].weight;
+        items[i].value = items[i].weight;
+        sum += items[i].weight;
+    }
+    if (sum < neededSum) {
+        cout << "No" << endl;
+        return 0;
+    }
+    half = backpack(items, neededSum, itemsLength);
+    if (half == neededSum) {
+        cout << "Yes" << endl;
+    } else {
+        cout << "No" << endl;
+    }
+    return 0;
+}

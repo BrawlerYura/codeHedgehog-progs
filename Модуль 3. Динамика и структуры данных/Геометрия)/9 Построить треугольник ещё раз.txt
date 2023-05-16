@@ -1,0 +1,93 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+const double PI = 3.1415926535897932384626433832795;
+
+struct Point {
+    double x, y;
+
+    Point(int x = 0, int y = 0) {
+        this->x = x;
+        this->y = y;
+    }
+};
+
+struct Line {
+    double a, b, c;
+};
+
+struct Triangle {
+    Point a, b, c;
+};
+
+Line newLineFromTwoPoints(Point a, Point b) {
+    Line x;
+    x.a = b.y - a.y;
+    x.b = a.x - b.x;
+    x.c = -x.a * a.x - x.b * a.y;
+    return x;
+}
+
+Point middleOfTwoPoints(Point a, Point b) {
+    Point c;
+    c.x = (a.x + b.x) / 2;
+    c.y = (a.y + b.y) / 2;
+    return c;
+}
+
+Point crossTwoLines(Line a, Line b) {
+    Point middle;
+    double determinant = a.a * b.b - b.a * a.b;
+    middle.x = -(a.c * b.b - b.c * a.b) / determinant;
+    middle.y = -(a.a * b.c - b.a * a.c) / determinant;
+    return middle;
+}
+
+Point findPoint(Point a, Point b, double d) {
+    Point c;
+    c.x = (a.x * cos(d * PI / 180) - a.y * sin(d * PI / 180)) + b.x;
+    c.y = (a.x * sin(d * PI / 180) + a.y * cos(d * PI / 180)) + b.y;
+    return c;
+}
+
+double length(Point a, Point b) {
+    return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
+Triangle similarTriangle(double angleA, double angleB) {
+    Point d, e;
+    e.x = 10;
+    Point g = findPoint(e, d, angleA);
+    Line lineDG = newLineFromTwoPoints(d, g);
+    Point h = findPoint(e, e, -angleB);
+    Line lineEH = newLineFromTwoPoints(e, h);
+    Point f = crossTwoLines(lineDG, lineEH);
+    Triangle similar;
+    similar.a = d;
+    similar.b = e;
+    similar.c = f;
+    return similar;
+}
+
+double getMedianLength(Triangle similar) {
+    Point middleOfAB = middleOfTwoPoints(similar.a, similar.b);
+    double lengthCMIDAB = length(similar.c, middleOfAB);
+    return lengthCMIDAB;
+}
+
+int main() {
+    double medianA;
+    double angleA, angleB;
+    cin >> medianA >> angleA >> angleB;
+    Point a, b, c;
+    Triangle similar = similarTriangle(angleA, angleB);
+    double similarMedianLength = getMedianLength(similar);
+    double coefficient = medianA / similarMedianLength;
+    b.x = similar.b.x * coefficient;
+    b.y = similar.b.y * coefficient;
+    c.x = similar.c.x * coefficient;
+    c.y = similar.c.y * coefficient;
+    printf("%.10f %.10f %.10f %.10f %.10f %.10f", a.x, a.y, b.x, b.y, c.x, c.y);
+}

@@ -1,0 +1,159 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+const int FIELD_SIZE = 8;
+
+struct Coords {
+    int x = 0, y = 0;
+};
+
+bool isInField(Coords coords, int n) {
+    if (coords.x < n && coords.x >= 0 && coords.y < n && coords.y >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+vector<Coords> findOutDirection(Coords currentCell, int n) {
+    vector<Coords> possibleMoves;
+    Coords temp;
+    int moves[8][2]{{-1, -2},
+                    {1,  -2},
+                    {-1, 2},
+                    {1,  2},
+                    {-2, -1},
+                    {2,  -1},
+                    {-2, 1},
+                    {2,  1}};
+    for (int i = 0; i < 8; i++) {
+        temp.x = currentCell.x + moves[i][0];
+        temp.y = currentCell.y + moves[i][1];
+        if (isInField(temp, n)) {
+            possibleMoves.push_back(temp);
+        }
+    }
+    return possibleMoves;
+}
+
+void printPath(Coords finalCoords, Coords startCoords, vector<vector<int>>& firstHorseDistance,
+               vector<vector<Coords>>& firstHorsePrevious, vector<vector<int>>& secondHorseDistance,
+               vector<vector<Coords>>& secondHorsePrevious, int n) {
+    vector<Coords> firstHorsePath;
+    vector<Coords> secondHorsePath;
+    Coords temp = finalCoords;
+    firstHorsePath.push_back(temp);
+    Coords startPath;
+    startPath.x = -1;
+    startPath.y = -1;
+    while (firstHorsePrevious[temp.x][temp.y].x != startPath.x || firstHorsePrevious[temp.x][temp.y].y != startPath.y) {
+        temp = firstHorsePrevious[temp.x][temp.y];
+        firstHorsePath.insert(firstHorsePath.begin(), temp);
+    }
+    temp = startCoords;
+    secondHorsePath.push_back(temp);
+    while (secondHorsePrevious[temp.x][temp.y].x != startPath.x ||
+           secondHorsePrevious[temp.x][temp.y].y != startPath.y) {
+        temp = secondHorsePrevious[temp.x][temp.y];
+        secondHorsePath.insert(secondHorsePath.begin(), temp);
+    }
+
+    cout << (firstHorseDistance[finalCoords.x][finalCoords.y] + 1) * 2 << endl;
+    Coords coords;
+
+    for (int i = 1; i < firstHorsePath.size(); i++) {
+        coords = firstHorsePath[i];
+        cout << "1 " << coords.x + 1 << " " << coords.y + 1 << endl;
+        coords = secondHorsePath[i];
+        cout << "2 " << coords.x + 1 << " " << coords.y + 1 << endl;
+    }
+}
+
+void
+directlyBFS(Coords startCoords, Coords finalCoords, int n, vector<vector<int>>& firstHorseDistance,
+            vector<vector<Coords>>& firstHorsePrevious, vector<vector<int>>& secondHorseDistance,
+            vector<vector<Coords>>& secondHorsePrevious) {
+    Coords temp1, temp2;
+    vector<vector<bool>> firstHorseIsUsed(n, vector<bool>(n, false));
+    vector<vector<bool>> secondHorseIsUsed(n, vector<bool>(n, false));
+    vector<Coords> possibleMoves;
+    vector<Coords> firstHorseQueue;
+    vector<Coords> secondHorseQueue;
+
+    firstHorseQueue.push_back(startCoords);
+    firstHorseIsUsed[startCoords.x][startCoords.y] = true;
+
+    secondHorseQueue.push_back(finalCoords);
+    secondHorseIsUsed[finalCoords.x][finalCoords.y] = true;
+
+    while (!firstHorseQueue.empty() || !secondHorseQueue.empty()) {
+
+        temp1 = firstHorseQueue[0];
+        firstHorseQueue.erase(firstHorseQueue.begin());
+
+        temp2 = secondHorseQueue[0];
+        secondHorseQueue.erase(secondHorseQueue.begin());
+        possibleMoves = findOutDirection(temp1, n);
+        if (!possibleMoves.empty()) {
+            for (int i = 0; i < possibleMoves.size(); i++) {
+
+                if (!firstHorseIsUsed[possibleMoves[i].x][possibleMoves[i].y] &&
+                    (possibleMoves[i].x != temp2.x || possibleMoves[i].y != temp2.y)) {
+                    firstHorseQueue.push_back(possibleMoves[i]);
+                    firstHorseIsUsed[possibleMoves[i].x][possibleMoves[i].y] = true;
+                    firstHorseDistance[possibleMoves[i].x][possibleMoves[i].y] =
+                            firstHorseDistance[temp1.x][temp1.y] + 1;
+                    firstHorsePrevious[possibleMoves[i].x][possibleMoves[i].y] = temp1;
+                }
+            }
+        }
+        possibleMoves = findOutDirection(temp2, n);
+        if (!possibleMoves.empty()) {
+            for (int i = 0; i < possibleMoves.size(); i++) {
+
+                if (!secondHorseIsUsed[possibleMoves[i].x][possibleMoves[i].y] &&
+                    (possibleMoves[i].x != temp1.x || possibleMoves[i].y != temp1.y)) {
+                    secondHorseQueue.push_back(possibleMoves[i]);
+                    secondHorseIsUsed[possibleMoves[i].x][possibleMoves[i].y] = true;
+                    secondHorseDistance[possibleMoves[i].x][possibleMoves[i].y] =
+                            secondHorseDistance[temp2.x][temp2.y] + 1;
+                    secondHorsePrevious[possibleMoves[i].x][possibleMoves[i].y] = temp2;
+                }
+            }
+        }
+    }
+}
+
+void
+breadthFirstSearch(Coords startCoords, Coords finalCoords, int n) {
+    Coords temp;
+    temp.x = -1;
+    temp.y = -1;
+    vector<vector<Coords>> firstHorsePrevious(n, vector<Coords>(n, temp));
+    vector<vector<Coords>> secondHorsePrevious(n, vector<Coords>(n, temp));
+    vector<vector<int>> firstHorseDistance(n, vector<int>(n, -1));
+    vector<vector<int>> secondHorseDistance(n, vector<int>(n, -1));
+
+    directlyBFS(startCoords, finalCoords, n, firstHorseDistance, firstHorsePrevious, secondHorseDistance,
+                secondHorsePrevious);
+
+    printPath(finalCoords, startCoords, firstHorseDistance, firstHorsePrevious, secondHorseDistance,
+              secondHorsePrevious, n);
+
+}
+
+int main() {
+    int n = FIELD_SIZE;
+    Coords startCoords;
+    Coords finalCoords;
+    cin >> startCoords.x >> startCoords.y >> finalCoords.x >> finalCoords.y;
+    startCoords.x--;
+    startCoords.y--;
+    finalCoords.x--;
+    finalCoords.y--;
+    vector<vector<int>> graph(n * n, vector<int>(n * n, 0));
+    vector<bool> isUsed(n * n, false);
+    breadthFirstSearch(startCoords, finalCoords, n);
+}

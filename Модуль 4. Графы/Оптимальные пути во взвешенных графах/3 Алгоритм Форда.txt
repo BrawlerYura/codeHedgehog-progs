@@ -1,0 +1,40 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+void floydsAlg(vector<vector<int>> &edges, int n, int edgesCount, int s) {
+    vector<int> distance(n, INT_MAX);
+    distance[s] = 0;
+    for (int k = 1; k < n; k++) {
+        for (int i = 0; i < edgesCount; i++) {
+            int begin = edges[i][0] - 1;
+            int end = edges[i][1] - 1;
+            int weight = edges[i][2];
+            if (distance[begin] + weight < distance[end] && distance[begin] != INT_MAX) {
+                distance[end] = distance[begin] + weight;
+            }
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        if (distance[i] == INT_MAX) {
+            cout << "No" << " ";
+        } else {
+            cout << distance[i] << " ";
+        }
+    }
+}
+
+
+int main() {
+    int matrixSize, edgesCount;
+    cin >> matrixSize >> edgesCount;
+    vector<vector<int>> edges(edgesCount, vector<int>(3));
+    for (int i = 0; i < edgesCount; i++) {
+        for (int j = 0; j < 3; j++) {
+            cin >> edges[i][j];
+        }
+    }
+    floydsAlg(edges, matrixSize, edgesCount, 0);
+}

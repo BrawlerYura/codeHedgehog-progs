@@ -1,0 +1,74 @@
+#include <iostream>
+
+using namespace std;
+
+void transitivity(int **matrix, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                continue;
+            }
+            if (!matrix[i][j]) {
+                continue;
+            }
+            for (int k = 0; k < n; k++) {
+                if (k == i || k == j){
+                    continue;
+                }
+                if (matrix[j][k] == 0) {
+                    continue;
+                }
+                if (matrix[i][k] == 0) {
+                    cout << "-1" << endl;
+                    return;
+                }
+            }
+        }
+    }
+    cout << "1" << endl;
+}
+
+void certainty(int **matrix, int n) {
+    for (int i = 0; i < n / 2 + 1; i++) {
+        for (int j = 0; j < n; j++) {
+            if (matrix[i][j] != matrix[j][i]) {
+                cout << "1" << endl;
+                return;
+            }
+        }
+    }
+    cout << "-1" << endl;
+}
+
+int main() {
+    int n;
+    bool deliberateness = false, completeness = true;
+    cin >> n;
+    int **adjacencyMatrix = new int *[n];
+    for (int i = 0; i < n; i++) {
+        adjacencyMatrix[i] = new int[n];
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> adjacencyMatrix[i][j];
+            if (adjacencyMatrix[i][j] > 1) {
+                deliberateness = true;
+            }
+            if (i != j && adjacencyMatrix[i][j] == 0) {
+                completeness = false;
+            }
+        }
+    }
+    certainty(adjacencyMatrix, n);
+    if (deliberateness) {
+        cout << "1" << endl;
+    } else {
+        cout << "-1" << endl;
+    }
+    transitivity(adjacencyMatrix, n);
+    if (completeness) {
+        cout << "1" << endl;
+    } else {
+        cout << "-1" << endl;
+    }
+}

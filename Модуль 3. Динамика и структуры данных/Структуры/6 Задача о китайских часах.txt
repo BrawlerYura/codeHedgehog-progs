@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Clock {
+    int generalTime;
+
+    Clock() {
+        generalTime = 0;
+    }
+
+    Clock(int hour, int minute, int second) {
+        this->generalTime = hour * 3600 + minute * 60 + second;
+    }
+
+    int getHour() const {
+        return this->generalTime / 3600;
+    }
+
+    int getMinute() const {
+        return (this->generalTime % 3600) / 60;
+    }
+
+    int getSecond() const {
+        return this->generalTime % 60;
+    }
+
+    void printTime() {
+        printf("%01d:%02d:%02d", getHour(), getMinute(), getSecond());
+    }
+};
+
+void merge(vector<Clock> &time, int leftLimit, int mid, int rightLimit) {
+    vector<Clock> temp(rightLimit - leftLimit);
+    int left = 0, right = 0;
+
+    while ((left < mid - leftLimit) && (right < rightLimit - mid)) {
+        if (time[leftLimit + left].generalTime < time[mid + right].generalTime) {
+            temp[left + right] = time[leftLimit + left];
+            left++;
+        } else {
+            temp[left + right] = time[mid + right];
+            right++;
+        }
+    }
+
+    while (left < mid - leftLimit) {
+        temp[left + right] = time[leftLimit + left];
+        left++;
+    }
+
+    while (right < rightLimit - mid) {
+        temp[left + right] = time[mid + right];
+        right++;
+    }
+
+    for (int i = 0; i < left + right; i++) {
+        time[leftLimit + i] = temp[i];
+    }
+}
+
+void mergeSort(vector<Clock> &time, int left, int right) {
+    if (left + 1 >= right) {
+        return;
+    }
+
+    int mid = (left + right) / 2;
+    mergeSort(time, left, mid);
+    mergeSort(time, mid, right);
+    merge(time, left, mid, right);
+}
+
+int main() {
+    int n;
+    cin >> n;
+    vector<Clock> clocks(n);
+    for (int i = 0; i < n; i++) {
+        int hour, minute, second;
+        scanf("%d:%d:%d", &hour, &minute, &second);
+        clocks[i] = Clock(hour, minute, second);
+    }
+    mergeSort(clocks, 0, n);
+    double *timeInRoad = new double[n];
+    for (int i = 1; i < n; ++i) {
+        timeInRoad[0] += i * (clocks[i].generalTime - clocks[i - 1].generalTime);
+    }
+    if (n > 1) {
+        timeInRoad[1] = timeInRoad[0] - (clocks[n - 1].generalTime - clocks[0].generalTime) + (n - 1) *
+                (43200 - clocks[n - 1].generalTime + clocks[0].generalTime);
+    }
+
+    for (int i = 2; i < n; i++) {
+        timeInRoad[i] = timeInRoad[i - 1] -
+                        (43200 - clocks[i - 1].generalTime + clocks[i - 2].generalTime) +
+                        (n - 1) * (clocks[i - 1].generalTime - clocks[i - 2].generalTime);
+    }
+
+    int minIndex = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (timeInRoad[i] < timeInRoad[minIndex]) {
+            minIndex = i;
+        }
+    }
+
+    if(minIndex == 0) {
+        clocks[n - 1].printTime();
+    } else {
+        clocks[minIndex - 1].printTime();
+    }
+}

@@ -1,0 +1,32 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int n, edges;
+    int edge1, edge2;
+    cin >> n >> edges;
+    int **adjacencyMatrix = new int *[n];
+    for(int i = 0; i < n; i++) {
+        adjacencyMatrix[i] = new int[n];
+    }
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            adjacencyMatrix[i][j] = 0;
+        }
+    }
+    for(int i = 0; i < edges; i++) {
+        cin >> edge1 >> edge2;
+        adjacencyMatrix[edge1 - 1][edge2 - 1] = 1;
+        adjacencyMatrix[edge2 - 1][edge1 - 1] = 1;
+    }
+    for(int i = 0; i < n; i++) {
+        cout << i + 1 << ": ";
+        for(int j = 0; j < n; j++) {
+            if(adjacencyMatrix[i][j] == 1) {
+                cout << j + 1 << " ";
+            }
+        }
+        cout << endl;
+    }
+}

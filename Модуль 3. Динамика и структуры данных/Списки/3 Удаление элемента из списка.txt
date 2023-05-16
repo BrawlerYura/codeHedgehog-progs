@@ -1,0 +1,103 @@
+#include <iostream>
+
+using namespace std;
+
+//Оправдания в предыдущей задаче +
+//Как и просил удалил метод putIn, дополнительные массивы больше не использую.
+//
+//--Ситдиков Юрий Максимович
+struct List {
+    void pushBack(int data);
+
+    void printList();
+
+    void popByData(int popData);
+
+    List() {
+        head = nullptr;
+        listSize = 0;
+    };
+
+    struct Node {
+        Node* nextAddress;
+        int data;
+
+        Node(int data = 0, Node* nextAddress = nullptr) {
+            this->data = data;
+            this->nextAddress = nextAddress;
+        }
+    };
+
+    Node* head;
+    Node* tail;
+    int listSize;
+
+    Node *findNode(int index);
+
+    int pop();
+};
+
+void List::pushBack(int data) {
+    Node* newNode = new Node(data);
+    if (head == nullptr) {
+        head = newNode;
+        tail = newNode;
+    }
+    else {
+        tail->nextAddress = newNode;
+        tail = newNode;
+    }
+    listSize++;
+};
+
+void List::printList() {
+    Node* current = this->head;
+    cout << current->data << " ";
+    while (current->nextAddress != nullptr) {
+        current = current->nextAddress;
+        cout << current->data << " ";
+    }
+}
+
+List::Node *List::findNode(int index) {
+    Node *current = head;
+    for (int i = 0; i < index - 2; i++) {
+        current = current->nextAddress;
+    }
+    return current;
+}
+
+int List::pop() {
+    Node *current = findNode(listSize);
+    current->nextAddress = nullptr;
+    listSize--;
+    int popData = tail->data;
+    tail = current;
+    return popData;
+}
+
+void List::popByData(int popData) {
+    Node* current = head;
+    Node* previous;
+    if (head->data == popData) {
+        head->data = head->nextAddress->data;
+        head->nextAddress = head->nextAddress->nextAddress;
+        return;
+    }
+    while (current->data != popData) {
+        previous = current;
+        current = current->nextAddress;
+    }
+    previous->nextAddress = current->nextAddress;
+}
+
+int main() {
+    List List;
+    int data;
+    while (cin >> data) {
+        List.pushBack(data);
+    }
+    data = List.pop();
+    List.popByData(data);
+    List.printList();
+}

@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+#include <cmath>
+
+using namespace std;
+
+struct Island {
+    int x, y, radius;
+};
+
+double findDistanceBetweenTwoIslands(Island firstIsland, Island secondIsland) {
+    return sqrt((firstIsland.x - secondIsland.x) * (firstIsland.x - secondIsland.x) +
+                (firstIsland.y - secondIsland.y) * (firstIsland.y - secondIsland.y)) -
+                firstIsland.radius - secondIsland.radius;
+}
+
+void fillInAdjacencyMatrix(int n, vector<Island> &islands, vector<vector<double>> &adjacencyMatrix) {
+    Island firstIsland;
+    Island secondIsland;
+    for (int i = 0; i < n; i++) {
+        firstIsland = islands[i];
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                continue;
+            }
+            secondIsland = islands[j];
+            adjacencyMatrix[i][j] = findDistanceBetweenTwoIslands(firstIsland, secondIsland);
+            adjacencyMatrix[j][i] = findDistanceBetweenTwoIslands(firstIsland, secondIsland);
+        }
+    }
+}
+
+void floydsAlg(vector<vector<double>> &matrix, int n, vector<vector<int>>& requests, int m) {
+    vector<vector<double>> distanceMatrix = matrix;
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (distanceMatrix[i][k] < INT_MAX && distanceMatrix[k][j] < INT_MAX &&
+                    distanceMatrix[i][k] + distanceMatrix[k][j] < distanceMatrix[i][j]) {
+                    distanceMatrix[i][j] = distanceMatrix[i][k] + distanceMatrix[k][j];
+                }
+            }
+        }
+    }
+    for(int i = 0; i < m; i++) {
+        printf("%.10f\n", distanceMatrix[requests[i][0] - 1][requests[i][1] - 1]);
+    }
+}
+
+int main() {
+    int matrixSize;
+    cin >> matrixSize;
+    vector<Island> islands(matrixSize);
+    for (int i = 0; i < matrixSize; i++) {
+        cin >> islands[i].x >> islands[i].y >> islands[i].radius;
+    }
+    int m;
+    cin >> m;
+    vector<vector<int>> requests(m, vector<int>(2));
+    for(int i = 0; i < m; i++) {
+        cin >> requests[i][0] >> requests[i][1];
+    }
+    vector<vector<double>> adjacencyMatrix(matrixSize, vector<double>(matrixSize));
+    fillInAdjacencyMatrix(matrixSize, islands, adjacencyMatrix);
+    floydsAlg(adjacencyMatrix, matrixSize, requests, m);
+}

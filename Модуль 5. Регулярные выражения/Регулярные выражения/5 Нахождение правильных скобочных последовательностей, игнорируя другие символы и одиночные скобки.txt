@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection.Emit;
+using System.Text.RegularExpressions;
+//Открыл глаза на эту задачу Кирсанов Александр
+class Program
+{
+    static void Main()
+    {
+        while(true)
+        {
+            string text = Console.ReadLine();
+            if(text == null) {
+                break;
+            }
+
+            string bracketsSequence = @"(\(.*\))*(\{.*\})*";
+            Regex regex = new Regex($@"{bracketsSequence}");
+            MatchCollection matches = regex.Matches(text);
+
+            for (int i = 0; i < matches.Count; i++)
+            {
+                Console.WriteLine(matches[i]);
+            }
+        }
+    }
+}

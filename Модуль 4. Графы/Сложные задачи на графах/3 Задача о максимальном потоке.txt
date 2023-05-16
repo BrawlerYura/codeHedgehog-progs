@@ -1,0 +1,92 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+// Мужичок вообще гений https://www.youtube.com/watch?v=M6cm8UeeziI
+
+using namespace std;
+
+bool BFS(const vector<vector<int>> &adjacencyMatrix, vector<int> &level, int n) {
+    int temp;
+    vector<int> previous(n, -1);
+    vector<bool> isUsed(n, false);
+    for(int i = 0; i < level.size(); i++) {
+        level[i] = -1;
+    }
+    level[0] = 0;
+
+    vector<int> queue;
+    queue.push_back(0);
+    isUsed[0] = true;
+    while (!queue.empty()) {
+        temp = queue[0];
+        queue.erase(queue.begin());
+        for (int j = 0; j < n; j++) {
+            if (!isUsed[j] && adjacencyMatrix[temp][j] != 0) {
+                queue.push_back(j);
+                isUsed[j] = true;
+                level[j] = level[temp] + 1;
+                previous[j] = temp;
+            }
+        }
+    }
+    return level[n - 1] != -1;
+}
+
+int calculateMaximumFlow(vector<int> &path, vector<vector<int>> &matrix) {
+    int min = INT_MAX;
+    for (int i = 0; i < path.size() - 1; i++) {
+        if (min > matrix[path[i]][path[i + 1]]) {
+            min = matrix[path[i]][path[i + 1]];
+        }
+    }
+    for (int i = 0; i < path.size() - 1; i++) {
+        matrix[path[i]][path[i + 1]] -= min;
+    }
+    return min;
+}
+
+void gamilton(int current, vector<int> &path, vector<bool> &isVisited, vector<vector<int>> &matrix, int n,
+              int &maxFlow, vector<int> &level) {
+    path.push_back(current);
+    if (path[path.size() - 1] == n - 1) {
+        maxFlow += calculateMaximumFlow(path, matrix);
+    }
+
+    isVisited[current] = true;
+    for (int i = 0; i < n; i++) {
+        if (matrix[current][i] != 0 && !isVisited[i] && level[current] == level[i] - 1) {
+            gamilton(i, path, isVisited, matrix, n, maxFlow, level);
+        }
+    }
+    isVisited[current] = false;
+    path.pop_back();
+}
+
+int dinicsAlg(vector<vector<int>> &matrix, int n) {
+    int maxFlow = 0;
+    vector<int> level(n, -1);
+    while (BFS(matrix, level, n)) {
+        vector<int> path;
+        vector<bool> isVisited(n, false);
+        gamilton(0, path, isVisited, matrix, n, maxFlow, level);
+    }
+
+    return maxFlow;
+}
+
+int main() {
+    int matrixSize;
+    cin >> matrixSize;
+    vector<vector<int>> adjacencyMatrix(matrixSize, vector<int>(matrixSize));
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+    if (matrixSize == 1) {
+        cout << 0;
+        return 0;
+    }
+    cout << dinicsAlg(adjacencyMatrix, matrixSize);
+}

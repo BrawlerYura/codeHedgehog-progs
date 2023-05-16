@@ -1,0 +1,72 @@
+#include <iostream>
+
+using namespace std;
+
+struct point {
+    double x, y;
+};
+
+struct vector {
+    point a, b;
+};
+
+struct line {
+    double a, b, c;
+};
+
+line newLineFromTwoPoints(point a, point b) {
+    line x;
+    x.a = b.y - a.y;
+    x.b = a.x - b.x;
+    x.c = -x.a * a.x - x.b * a.y;
+    return x;
+}
+
+line newLineFromVector(vector a){
+    line x;
+    x.a = a.b.y - a.a.y;
+    x.b = a.a.x - a.b.x;
+    x.c = -x.a * a.a.x - x.b * a.a.y;
+    return x;
+}
+
+vector normalVector(line a) {
+    vector b;
+    b.a.x = 0;
+    b.a.y = 0;
+    b.b.x = a.a;
+    b.b.y = a.b;
+    return b;
+}
+
+vector normalVectorFromPoint(vector a, point b) {
+    vector c;
+    c.a.x = b.x;
+    c.a.y = b.y;
+    c.b.x = b.x + a.b.x;
+    c.b.y = b.y + a.b.y;
+    return c;
+}
+
+point crossTwoLines(line a, line b) {
+    point middle;
+    double determinant = a.a * b.b - b.a * a.b;
+    middle.x = -(a.c * b.b - b.c * a.b) / determinant;
+    middle.y = -(a.a * b.c - b.a * a.c) / determinant;
+    return middle;
+}
+
+int main() {
+    point a, b, c;
+    cin >> a.x >> a.y >> b.x >> b.y >> c.x >> c.y;
+    line AB = newLineFromTwoPoints(a, b);
+    line BC = newLineFromTwoPoints(b, c);
+    vector normalAB = normalVector(AB);
+    vector normalBC = normalVector(BC);
+    normalAB = normalVectorFromPoint(normalAB, c);
+    normalBC = normalVectorFromPoint(normalBC, a);
+    line normalLineAB = newLineFromVector(normalAB);
+    line normalLineBC = newLineFromVector(normalBC);
+    point crossOfNormals = crossTwoLines(normalLineAB, normalLineBC);
+    printf("%.6f %.6f", crossOfNormals.x, crossOfNormals.y);
+}

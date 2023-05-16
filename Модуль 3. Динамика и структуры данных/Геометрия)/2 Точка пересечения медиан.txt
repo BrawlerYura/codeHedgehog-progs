@@ -1,0 +1,46 @@
+#include <iostream>
+
+using namespace std;
+
+struct point {
+    double x, y;
+};
+
+struct line {
+    double a, b, c;
+};
+
+point middleOfTwoPoints(point a, point b) {
+    point c;
+    c.x = (a.x + b.x) / 2;
+    c.y = (a.y + b.y) / 2;
+    return c;
+}
+
+line newLineFromTwoPoints(point a, point b) {
+    line x;
+    x.a = b.y - a.y;
+    x.b = a.x - b.x;
+    x.c = -x.a * a.x - x.b * a.y;
+    return x;
+}
+
+point crossTwoLines(line a, line b) {
+    point middle;
+    double determinant = a.a * b.b - b.a * a.b;
+    middle.x = -(a.c * b.b - b.c * a.b) / determinant;
+    middle.y = -(a.a * b.c - b.a * a.c) / determinant;
+    return middle;
+}
+
+int main() {
+    point a, b, c;
+    cin >> a.x >> a.y >> b.x >> b.y >> c.x >> c.y;
+    point middleOfAB = middleOfTwoPoints(a, b);
+    point middleOfBC = middleOfTwoPoints(b, c);
+    point middleOfAC = middleOfTwoPoints(a, c);
+    line medianC = newLineFromTwoPoints(c, middleOfAB);
+    line medianA = newLineFromTwoPoints(a, middleOfBC);
+    point crossMedians = crossTwoLines(medianA, medianC);
+    printf("%.6f %.6f", crossMedians.x, crossMedians.y);
+}

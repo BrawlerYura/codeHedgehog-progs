@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection.Emit;
+using System.Text.RegularExpressions;
+
+class Program
+{
+    const double ACCELERATION_FIRST = 0.1;
+    const double ACCELERATION_SECOND = 0.3;
+    const int PARTICLES_COUNT = 100;
+
+
+    struct Particle
+    {
+        public double velocityX, velocityY;
+        public double pBestX, pBestY, bestVal;
+        public double currentX, currentY;
+
+        public Particle(double currentX, double currentY)
+        {
+            velocityX = 2;
+            velocityY = 2;
+            pBestX = 0;
+            pBestY = 0;
+            this.currentX = currentX;
+            this.currentY = currentY;
+            bestVal = int.MaxValue;
+        }
+    }
+
+    static double calculateVelocity(double gBest, double velocity, double current, double pBest)
+    {
+        Random rnd = new Random();
+        double result = 0.95 * velocity + (ACCELERATION_FIRST * rnd.NextDouble() * (pBest - current)) + (ACCELERATION_SECOND * rnd.NextDouble() * (gBest - current));
+        
+        return result;
+    }
+
+    static double calculatePosition(double velocity, double currentPosition)
+    {
+        double result = currentPosition + velocity;
+        return result;
+    }
+
+    static void iteration(ref Particle[] particles, ref double gBestVal, ref double gBestX, ref double gBestY)
+    {
+        double currentValue;
+        for(int i = 0; i < PARTICLES_COUNT; i++)
+        {
+            particles[i].velocityX = calculateVelocity(gBestX, particles[i].velocityX, particles[i].currentX, particles[i].pBestX);
+            particles[i].velocityY = calculateVelocity(gBestY, particles[i].velocityY, particles[i].currentY, particles[i].pBestY);
+
+            particles[i].currentX = calculatePosition(particles[i].velocityX, particles[i].currentX);
+            particles[i].currentY = calculatePosition(particles[i].velocityY, particles[i].currentY);
+
+
+            Console.WriteLine("? " + particles[i].currentX + " " + particles[i].currentY);
+            Console.Out.Flush();
+
+            currentValue = Convert.ToDouble(Console.ReadLine());
+
+            if(currentValue < particles[i].bestVal)
+            {
+                particles[i].bestVal = currentValue;
+                particles[i].pBestX = particles[i].currentX;
+                particles[i].pBestY = particles[i].currentY;
+            }
+            if(currentValue < gBestVal)
+            {
+                gBestVal = currentValue;
+                gBestX = particles[i].currentX;
+                gBestY = particles[i].currentY;
+            }
+
+            
+        }
+    }
+
+    static void Main()
+    {
+        Random rnd = new Random();
+        double gBestVal = int.MaxValue, gBestX = 0, gBestY = 0;
+        int count = PARTICLES_COUNT;
+        Particle[] particles = new Particle[count];
+
+        for(int i = 0; i < count; i++)
+        {
+            particles[i] = new Particle(rnd.NextDouble() * 200 - 100, rnd.NextDouble() * 200 - 100);
+        }
+
+        for(int i = 0; i < 500; i++)
+        {
+            iteration(ref particles, ref gBestVal, ref gBestX, ref gBestY);
+        }
+
+        Console.WriteLine("! " + gBestX + " " + gBestY);
+        Console.Out.Flush();
+    }
+}

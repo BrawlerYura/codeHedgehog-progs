@@ -1,0 +1,34 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+    int n, m, l, r, mid, v;
+    bool b = false;
+    cin >> n;
+    int* a = new int[n];
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+    }
+    cin >> m;
+    for (int i = 0; i < m; i++) {
+        l = 0;
+        r = n;
+        b = false;
+        cin >> v;
+        while (l <= r && b == false) {
+            mid = ((l + r) / 2);
+            if (a[mid] == v) {
+                cout << mid + 1 << endl;
+                b = true;
+            }
+            else if (a[mid] > v) {
+                r = mid - 1;
+            }
+            else {
+                l = mid + 1;
+            }
+        }
+        if (b == false)
+            cout << "-1" << endl;
+    }
+}

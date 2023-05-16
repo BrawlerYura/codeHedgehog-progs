@@ -1,0 +1,103 @@
+#include <iostream>
+
+using namespace std;
+int n = 1000;
+
+struct List {
+    void pushBack(int data);
+
+    void printList();
+
+    List() {
+        head = nullptr;
+        ListSize = 0;
+    };
+
+    struct Node {
+        Node* nextAddress;
+        int data;
+
+        Node(int data = 0, Node* nextAddress = nullptr) {
+            this->data = data;
+            this->nextAddress = nextAddress;
+        }
+    };
+
+    Node* head;
+    Node* tail;
+    int ListSize;
+
+    Node *findNode(int index);
+};
+
+void List::pushBack(int data) {
+    Node* newNode = new Node(data);
+    if (head == nullptr) {
+        head = newNode;
+        tail = newNode;
+    }
+    else {
+        tail->nextAddress = newNode;
+        tail = newNode;
+    }
+    ListSize++;
+};
+
+void List::printList() {
+    Node* current = this->head;
+    cout << current->data << " ";
+    while (current->nextAddress != nullptr) {
+        current = current->nextAddress;
+        cout << current->data << " ";
+    }
+}
+
+List::Node* List::findNode(int index) {
+    Node* current = head;
+    for (int i = 0; i < index; i++) {
+        current = current->nextAddress;
+    }
+    return current;
+}
+
+void Merge(List arr, int first, int last, List temp)
+{
+    int mid, start, final;
+    mid = (first + last) / 2;
+    start = first;
+    final = mid + 1;
+    for (int j = first; j <= last; j++) {
+        if ((start <= mid) && ((final > last) || (arr.findNode(start)->data < arr.findNode(final)->data))) {
+            temp.findNode(j)->data = arr.findNode(start)->data;
+            start++;
+        }
+        else {
+            temp.findNode(j)->data = arr.findNode(final)->data;
+            final++;
+        }
+    }
+    for (int j = first; j <= last; j++)
+        arr.findNode(j)->data = temp.findNode(j)->data;
+};
+void MergeSort(List arr, int first, int last, List temp)
+{
+    {
+        if (first < last)
+        {
+            MergeSort(arr, first, (first + last) / 2, temp);
+            MergeSort(arr, (first + last) / 2 + 1, last, temp);
+            Merge(arr, first, last, temp);
+        }
+    }
+};
+
+int main() {
+    List List, temp;
+    int data;
+    while (cin >> data) {
+        List.pushBack(data);
+        temp.pushBack(data);
+    }
+    MergeSort(List, 0, List.ListSize - 1, temp);
+    List.printList();
+}

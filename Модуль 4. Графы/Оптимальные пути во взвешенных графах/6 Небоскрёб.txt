@@ -1,0 +1,48 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+#include <cmath>
+
+using namespace std;
+
+struct Edges {
+    int begin, end, weight;
+};
+
+void fordsAlg(vector<Edges> &edges, int edgesCount, int s, int f, int floorsCount, int wordsPerFloor) {
+    vector<int> distance(floorsCount, INT_MAX);
+    distance[s - 1] = 0;
+    for(int k = 1; k < floorsCount; k++) {
+        for (int i = 0; i < edgesCount; i++) {
+            if (distance[edges[i].begin - 1] + edges[i].weight < distance[edges[i].end - 1] &&
+                distance[edges[i].begin - 1] != INT_MAX) {
+                distance[edges[i].end - 1] = distance[edges[i].begin - 1] + edges[i].weight;
+            }
+            if (distance[edges[i].end - 1] + edges[i].weight < distance[edges[i].begin - 1] &&
+                distance[edges[i].end - 1] != INT_MAX) {
+                distance[edges[i].begin - 1] = distance[edges[i].end - 1] + edges[i].weight;
+            }
+        }
+    }
+    cout << distance[f - 1];
+}
+
+int main() {
+    int floorsCount, elevatorsCount, wordsPerFloor;
+    cin >> floorsCount >> elevatorsCount >> wordsPerFloor;
+    int startFloor, finishFloor;
+    cin >> startFloor >> finishFloor;
+    vector<Edges> edges;
+    Edges edge{};
+    for (int i = 0; i < elevatorsCount; i++) {
+        cin >> edge.begin >> edge.end >> edge.weight;
+        edges.push_back(edge);
+    }
+    for(int i = 0; i < floorsCount - 1; i++) {
+        edge.begin = i + 1;
+        edge.end = i + 2;
+        edge.weight = wordsPerFloor;
+        edges.push_back(edge);
+    }
+    fordsAlg(edges, edges.size(), startFloor, finishFloor, floorsCount, wordsPerFloor);
+}

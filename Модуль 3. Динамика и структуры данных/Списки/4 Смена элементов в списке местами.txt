@@ -1,0 +1,86 @@
+#include <iostream>
+
+using namespace std;
+
+struct list {
+    void pushBack(int data);
+
+    void printList();
+
+    void replaceNodes(int replaceData1, int replaceData2);
+
+    list() {
+        head = nullptr;
+        listSize = 0;
+    };
+
+    struct node {
+        node* nextAddress;
+        int data;
+
+        node(int data = 0, node* nextAddress = nullptr) {
+            this->data = data;
+            this->nextAddress = nextAddress;
+        }
+    };
+
+    node* head;
+    node* tail;
+    int listSize;
+};
+
+void list::pushBack(int data) {
+    node* newNode = new node(data);
+    if (head == nullptr) {
+        head = newNode;
+        tail = newNode;
+    }
+    else {
+        tail->nextAddress = newNode;
+        tail = newNode;
+    }
+    listSize++;
+};
+
+void list::printList() {
+    node* current = this->head;
+    cout << current->data << " ";
+    while (current->nextAddress != nullptr) {
+        current = current->nextAddress;
+        cout << current->data << " ";
+    }
+}
+
+void list::replaceNodes(int replaceData1, int replaceData2) {
+    node* current = head;
+    node* temporary = new node;
+    while (current->data != replaceData1 && current->data != replaceData2) {
+        current = current->nextAddress;
+    }
+    temporary->data = current->data;
+    temporary->nextAddress = current;
+    current = current->nextAddress;
+    while (current->data != replaceData1 && current->data != replaceData2) {
+        current = current->nextAddress;
+    }
+    temporary->nextAddress->data = current->data;
+    current->data = temporary->data;
+}
+
+int main() {
+    list list;
+    int* data = new int[100000];
+    int temporary, count = 0;
+    while (cin >> temporary) {
+        data[count] = temporary;
+        count++;
+    }
+    for (int i = 0; i < count - 2; i++) {
+        list.pushBack(data[i]);
+    }
+    int replaceData1 = data[count - 2];
+    int replaceData2 = data[count - 1];
+    delete[] data;
+    list.replaceNodes(replaceData1, replaceData2);
+    list.printList();
+}

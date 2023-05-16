@@ -1,0 +1,89 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Coords {
+    int x = 0, y = 0;
+};
+
+bool isInField(Coords coords, int n) {
+    if (coords.x < n && coords.x >= 0 && coords.y < n && coords.y >= 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+vector<Coords> findOutDirection(Coords currentCell, vector<vector<int>>& graph, int n) {
+    vector<Coords> possibleMoves;
+    Coords temp;
+    int moveValue = graph[currentCell.x][currentCell.y];
+        if (moveValue >= 8) {
+            temp.x = currentCell.x;
+            temp.y = currentCell.y - 1;
+            possibleMoves.push_back(temp);
+            moveValue -= 8;
+        }
+        if (moveValue >= 4) {
+            temp.x = currentCell.x;
+            temp.y = currentCell.y + 1;
+            possibleMoves.push_back(temp);
+            moveValue -= 4;
+        }
+        if (moveValue >= 2) {
+            temp.x = currentCell.x + 1;
+            temp.y = currentCell.y;
+            possibleMoves.push_back(temp);
+            moveValue -= 2;
+        }
+        if (moveValue >= 1) {
+            temp.x = currentCell.x - 1;
+            temp.y = currentCell.y;
+            possibleMoves.push_back(temp);
+            moveValue -= 1;
+        }
+        return possibleMoves;
+}
+
+void breadthFirstSearch(Coords currentCell, vector<vector<int>>& graph, vector<vector<bool>>& isUsed, int graphSize, int n) {
+    Coords temp;
+    vector<Coords> possibleMoves;
+    vector<Coords> queue;
+    queue.push_back(currentCell);
+    isUsed[currentCell.x][currentCell.y] = true;
+    while (!queue.empty()) {
+        temp = queue[0];
+        queue.erase(queue.begin());
+        possibleMoves = findOutDirection(temp, graph, n);
+        for (int i = 0; i < possibleMoves.size(); i++) {
+            if (isInField(possibleMoves[i], n)) {
+                if (!isUsed[possibleMoves[i].x][possibleMoves[i].y]) {
+                    queue.push_back(possibleMoves[i]);
+                    isUsed[possibleMoves[i].x][possibleMoves[i].y] = true;
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+    vector<vector<int>> graph(n, vector<int>(n));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> graph[i][j];
+        }
+    }
+    Coords currentCell;
+    vector<vector<bool>> isUsed(n, vector<bool>(n, false));
+    breadthFirstSearch(currentCell, graph, isUsed, n * n, n);
+    if (isUsed[n - 1][n - 1]) {
+        cout << "Yes";
+    }
+    else {
+        cout << "No";
+    }
+}

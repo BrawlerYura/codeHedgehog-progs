@@ -1,0 +1,44 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+const double PI = 3.14159265;
+struct point {
+    double x, y;
+};
+
+struct line {
+    double a, b, c;
+};
+
+line NewLineFromTwoPoints(point a, point b) {
+    line x;
+    x.a = b.y - a.y;
+    x.b = a.x - b.x;
+    x.c = -x.a * a.x - x.b * a.y;
+    return x;
+}
+
+double lengthBetweenTwoPoints(point a, point b) {
+    return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+}
+
+double angleOfTriangle(double lengthA, double lengthB, double lengthC) {
+    double cosA = (((- (lengthA * lengthA)) + (lengthC * lengthC) + (lengthB * lengthB)) / (2 * lengthC * lengthB));
+    double angleA = acos(cosA) * 180 / PI;
+    return angleA;
+}
+
+int main() {
+    point a, b, c;
+    double lengthAB, lengthBC, lengthCA;
+    double angleA, angleB, angleC;
+    cin >> a.x >> a.y >> b.x >> b.y >> c.x >> c.y;
+    lengthAB = lengthBetweenTwoPoints(a, b);
+    lengthBC = lengthBetweenTwoPoints(b, c);
+    lengthCA = lengthBetweenTwoPoints(c, a);
+    angleA = angleOfTriangle(lengthBC, lengthAB, lengthCA);
+    angleB = angleOfTriangle(lengthCA, lengthAB, lengthBC);
+    angleC = angleOfTriangle(lengthAB, lengthBC, lengthCA);
+    printf("%.6f", max(angleA, max(angleB, angleC)));
+}

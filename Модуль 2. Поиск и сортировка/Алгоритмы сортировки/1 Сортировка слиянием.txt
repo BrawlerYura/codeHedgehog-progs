@@ -1,0 +1,44 @@
+#include <iostream>
+using namespace std;
+int n;
+void Merge(int *arr, int first, int last)
+{
+    int mid, start, final;
+    int *temp = new int[n];
+    mid = (first + last)/2;
+    start = first;
+    final = mid + 1;
+    for(int j = first; j <= last; j++) {
+        if ((start <= mid) && ((final > last) || (arr[start] < arr[final]))) {
+            temp[j] = arr[start];
+            start++;
+        } else {
+            temp[j] = arr[final];
+            final++;
+        }
+    }
+    for (int j=first; j<=last; j++)
+        arr[j]=temp[j];
+    delete[]temp;
+};
+void MergeSort(int *arr, int first, int last)
+{
+    {
+        if (first<last)
+        {
+            MergeSort(arr, first, (first+last)/2);
+            MergeSort(arr, (first+last)/2+1, last);
+            Merge(arr, first, last);
+        }
+    }
+};
+int main()
+{
+  cin >> n;
+  int *arr = new int[n];
+  for(int i = 0; i < n;i++)
+      cin >> arr[i];
+  MergeSort(arr, 0, n - 1);
+    for(int i = 0; i < n;i++)
+        cout << arr[i] << " ";
+}

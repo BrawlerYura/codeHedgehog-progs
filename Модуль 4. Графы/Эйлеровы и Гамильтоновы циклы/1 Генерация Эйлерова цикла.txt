@@ -1,0 +1,70 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+
+using namespace std;
+
+int isEilersCycle(vector<vector<int>> &matrix, int n) {
+
+    int count;
+    for (int i = 0; i < n; i++) {
+
+        count = 0;
+        vector<int> temp = matrix[i];
+
+        for (int j = 0; j < n; j++) {
+            if (temp[j]) {
+                count++;
+            }
+        }
+        if (count % 2 != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void eilersPath(vector<vector<int>> &matrix, int n) {
+
+    stack<int> st;
+    st.push(1);
+    vector<int> res;
+    while (!st.empty()) {
+        int v = st.top();
+        int i;
+        for (i = 0; i < n; i++) {
+            if (matrix[v][i]) {
+                break;
+            }
+        }
+        if (i == n) {
+            res.push_back(v);
+            st.pop();
+        } else {
+            --matrix[v][i];
+            --matrix[i][v];
+            st.push(i);
+        }
+    }
+    for (int i = 0; i < res.size(); i++) {
+        cout << res[i] + 1 << " ";
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<vector<int>> adjacencyMatrix(n, vector<int>(n));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+
+    if (isEilersCycle(adjacencyMatrix, n)) {
+        eilersPath(adjacencyMatrix, n);
+    } else {
+        cout << "-1";
+    }
+}

@@ -1,0 +1,56 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+struct Point {
+    double x, y;
+};
+
+struct Line {
+    double a, b, c;
+};
+
+Line newLineFromTwoPoints(Point a, Point b) {
+    Line x;
+    x.a = b.y - a.y;
+    x.b = a.x - b.x;
+    x.c = -x.a * a.x - x.b * a.y;
+    return x;
+}
+
+Point crossTwoLines(Line a, Line b) {
+    Point middle;
+    double determinant = a.a * b.b - b.a * a.b;
+    middle.x = -(a.c * b.b - b.c * a.b) / determinant;
+    middle.y = -(a.a * b.c - b.a * a.c) / determinant;
+    return middle;
+}
+
+Line getBissector(Point a, Point b, Point c) {
+    Line AB = newLineFromTwoPoints(a, b);
+    Line AC = newLineFromTwoPoints(a, c);
+    Line bissectorA;
+    bissectorA.a = AB.a / sqrt(AB.a * AB.a + AB.b * AB.b) + AC.a / sqrt(AC.a * AC.a + AC.b * AC.b);
+    bissectorA.b = AB.b / sqrt(AB.a * AB.a + AB.b * AB.b) + AC.b / sqrt(AC.a * AC.a + AC.b * AC.b);
+    bissectorA.c = AB.c / sqrt(AB.a * AB.a + AB.b * AB.b) + AC.c / sqrt(AC.a * AC.a + AC.b * AC.b);
+    if ((bissectorA.a * c.x + bissectorA.b * c.y + bissectorA.c) *
+        (bissectorA.a * b.x + bissectorA.b * b.y + bissectorA.c) <= 0) {
+        return bissectorA;
+    } else {
+        Line bissectorB;
+        bissectorA.a = AB.a / sqrt(AB.a * AB.a + AB.b * AB.b) - AC.a / sqrt(AC.a * AC.a + AC.b * AC.b);
+        bissectorA.b = AB.b / sqrt(AB.a * AB.a + AB.b * AB.b) - AC.b / sqrt(AC.a * AC.a + AC.b * AC.b);
+        bissectorA.c = AB.c / sqrt(AB.a * AB.a + AB.b * AB.b) - AC.c / sqrt(AC.a * AC.a + AC.b * AC.b);
+        return bissectorB;
+    }
+}
+
+int main() {
+    Point a, b, c;
+    cin >> a.x >> a.y >> b.x >> b.y >> c.x >> c.y;
+    Line bissectorA = getBissector(a, b, c);
+    Line bissectorB = getBissector(b, a, c);
+    Point cross = crossTwoLines(bissectorB, bissectorA);
+    printf("%.10f %.10f", cross.x, cross.y);
+}

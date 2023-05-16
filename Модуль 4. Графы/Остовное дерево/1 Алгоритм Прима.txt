@@ -1,0 +1,56 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+void dijkstrasAlg(vector<vector<int>> &matrix, int n) {
+    vector<int> distance(n, INT_MAX);
+    vector<bool> isProcessed(n, false);
+    vector<vector<int>> MST(n, vector<int>(n, 0));
+    distance[0] = 0;
+    int minDistance;
+    isProcessed[0] = true;
+    int length = 0;
+    int tempk, tempj;
+
+    for (int i = 1; i < n; i++) {
+        minDistance = INT_MAX;
+        for (int j = 0; j < n; j++) {
+            if (isProcessed[j]) {
+                for (int k = 0; k < n; k++) {
+                    if (!isProcessed[k] && matrix[j][k] != 0 && matrix[j][k] < minDistance) {
+                        minDistance = matrix[j][k];
+                        tempk = k;
+                        tempj = j;
+                    }
+                }
+            }
+        }
+        MST[tempj][tempk] = minDistance;
+        MST[tempk][tempj] = minDistance;
+        length += minDistance;
+        isProcessed[tempk] = true;
+    }
+    cout << length << endl;
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            cout << MST[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+
+int main() {
+    int matrixSize;
+    cin >> matrixSize;
+    vector<vector<int>> adjacencyMatrix(matrixSize, vector<int>(matrixSize));
+    for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+            cin >> adjacencyMatrix[i][j];
+        }
+    }
+
+    dijkstrasAlg(adjacencyMatrix, matrixSize);
+}

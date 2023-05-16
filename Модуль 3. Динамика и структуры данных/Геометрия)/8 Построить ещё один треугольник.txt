@@ -1,0 +1,69 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+const double PI = 3.1415926535897932384626433832795;
+
+struct Point {
+    double x, y;
+
+    Point(double x = 0, double y = 0) {
+        this->x = x;
+        this->y = y;
+    }
+};
+
+struct Line {
+    double a, b, c;
+};
+
+Line newLineFromTwoPoints(Point a, Point b) {
+    Line x;
+    x.a = b.y - a.y;
+    x.b = a.x - b.x;
+    x.c = -x.a * a.x - x.b * a.y;
+    if(x.a > 0 && x.a < 0.000001) {
+        x.a = 0;
+    }
+    if(x.b > 0 && x.b < 0.000001) {
+        x.b = 0;
+    }
+    if(x.c > 0 && x.c < 0.000001) {
+        x.c = 0;
+    }
+    return x;
+}
+
+Point crossTwoLines(Line a, Line b) {
+    Point middle;
+    double determinant = a.a * b.b - b.a * a.b;
+    middle.x = -(a.c * b.b - b.c * a.b) / determinant;
+    middle.y = -(a.a * b.c - b.a * a.c) / determinant;
+    return middle;
+}
+
+Point pointOnLine(Point a, double b, Point c) {
+    Point d;
+    d.x = (a.x * cos(b)) - (a.y * sin(b)) + c.x;
+    d.y = (a.x * sin(b)) + (a.y * cos(b)) + c.y;
+    return d;
+}
+
+int main() {
+    double lengthAB, angleA, angleB;
+    cin >> lengthAB >> angleA >> angleB;
+    Point a, b(lengthAB), c(10);
+    Point pointOnAC = pointOnLine(c, angleA * PI / 180, a);
+    Line lineAC = newLineFromTwoPoints(a, pointOnAC);
+    c.x = -c.x;
+    Point pointOnBC = pointOnLine(c, - angleB * PI / 180, b);
+    Line lineBC = newLineFromTwoPoints(b, pointOnBC);
+    c = crossTwoLines(lineAC, lineBC);
+    if(c.x > 0 && c.x < 0.000001) {
+        c.x = 0;
+    }
+    if(c.y > 0 && c.y < 0.000001) {
+        c.y = 0;
+    }
+    printf("%.10f %.10f\n%.10f %.10f\n%.10f %.10f", a.x, a.y, b.x, b.y, c.x, c.y);
+}

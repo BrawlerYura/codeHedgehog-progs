@@ -1,0 +1,53 @@
+#include <iostream>
+
+using namespace std;
+//Помог сделать Иван Евчатов
+struct Ingot {
+    int weight;
+    int value;
+};
+
+void print(int **arr, Ingot *ingots, int ingotslength, int maxCapacity) {
+    if (arr[ingotslength][maxCapacity] == 0) {
+        return;
+    } else if (arr[ingotslength - 1][maxCapacity] == arr[ingotslength][maxCapacity]) {
+        print(arr, ingots, ingotslength - 1, maxCapacity);
+    } else {
+        print(arr, ingots, ingotslength - 1, maxCapacity - ingots[ingotslength].weight);
+        cout << ingotslength << " ";
+    }
+}
+
+int main() {
+    int maxCapacity;
+    int ingotslength;
+    int **arr;
+    Ingot *ingots;
+
+    cin >> ingotslength >> maxCapacity;
+
+    ingots = new Ingot[ingotslength]{};
+    for (int i = 1; i < ingotslength + 1; i++) {
+        cin >> ingots[i].value;
+    }
+    for (int i = 1; i < ingotslength + 1; i++) {
+        cin >> ingots[i].weight;
+    }
+
+
+    arr = new int *[ingotslength + 1]{};
+    for (int i = 0; i < ingotslength + 1; i++) {
+        arr[i] = new int[maxCapacity + 1]{};
+    }
+
+    for (int i = 1; i < ingotslength + 1; i++) {
+        for (int j = 0; j < maxCapacity + 1; j++) {
+            arr[i][j] = arr[i - 1][j];
+            if (ingots[i].weight <= j) {
+                arr[i][j] = max(arr[i][j], arr[i - 1][j - ingots[i].weight] + ingots[i].value);
+            }
+        }
+    }
+
+    print(arr, ingots, ingotslength, maxCapacity);
+}

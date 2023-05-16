@@ -1,0 +1,61 @@
+#include <iostream>
+
+using namespace std;
+
+struct list {
+    void push_back(int data);
+
+    void print_list();
+
+    list() {
+        head = nullptr;
+        sizeOfList = 0;
+    };
+
+    struct node {
+        node *nextAddress;
+        node *previousAddress;
+        int data;
+
+        node(int data = 0, node *nextAddress = nullptr, node *previousAddress = nullptr) {
+            this->data = data;
+            this->nextAddress = nextAddress;
+            this->previousAddress = previousAddress;
+        }
+    };
+
+    node *head;
+    node *last;
+    int sizeOfList;
+};
+
+void list::push_back(int data) {
+    node *newNode = new node(data);
+    if (head == nullptr) {
+        head = newNode;
+        last = newNode;
+    } else {
+        last->nextAddress = newNode;
+        newNode->previousAddress = last;
+        last = newNode;
+    }
+    sizeOfList++;
+};
+
+void list::print_list() {
+    node *current = this->head;
+    cout << current->data << " ";
+    while (current->nextAddress != nullptr) {
+        current = current->nextAddress;
+        cout << current->data << " ";
+    }
+}
+
+int main() {
+    list list;
+    int data;
+    while (cin >> data) {
+        list.push_back(data);
+    }
+    list.print_list();
+}

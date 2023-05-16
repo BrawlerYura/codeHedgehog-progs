@@ -1,0 +1,37 @@
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+//Делали вместе с Ушаковым Федором
+class Program
+{
+    static void Main()
+    {
+        string temp;
+        string text = null;
+        do
+        {
+            temp = Console.ReadLine();
+            text += temp;
+            text += " ";
+        } while (temp != null);
+
+        string nameOfVariable = @"[a-z][a-z0-9]*";
+        string elementOfArray = $@"{nameOfVariable}(\[[a-z0-9]*\])?";
+        string func = $@"{nameOfVariable}(\([a-z0-9]*\))?";
+
+        string arithmeticExpression = $@"(\d+|{nameOfVariable}|{elementOfArray}|{func})\s*([+*/-]\s*(\d+|{nameOfVariable}|{elementOfArray}|{func})\s*)*";
+        string elementOfArrayWithExpression = $@"{nameOfVariable}(\[{arithmeticExpression}\])?";
+        string funcWithExpression = $@"{nameOfVariable}(\(({arithmeticExpression})?\s*(\s*,\s*{arithmeticExpression}\s*)*\))?";
+        string operand = $@"(\d+|{nameOfVariable}|{elementOfArrayWithExpression}|{funcWithExpression})";
+        string ExpressionWithElementOfArrayAndFunc = $@"{operand}\s*([+*/-]\s*{operand}\s*)*";
+        //ExpressionWithElementOfArray - строка с арифметическим выражением которое может содержать элементы массива с арифметическим выражением или функции
+
+        Regex regex = new Regex($@"({elementOfArrayWithExpression}|{funcWithExpression})\s*=\s*({elementOfArrayWithExpression}|{ExpressionWithElementOfArrayAndFunc});");
+        MatchCollection matches = regex.Matches(text);
+        for (int i = 0; i < matches.Count(); i++)
+        {
+            Console.WriteLine(matches[i]);
+        }
+    }
+}

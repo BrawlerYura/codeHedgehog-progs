@@ -1,0 +1,49 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+const double PI = 3.1415926535897932384;
+struct Point {
+    double x, y;
+};
+
+struct Vector {
+    Point a, b;
+};
+
+struct Line {
+    double a, b, c;
+};
+
+Vector newVector(Point a, Point b) {
+    Vector c;
+    c.a = a;
+    c.b = b;
+    return c;
+}
+
+Point findPoint(Vector a, Point b, double d) {
+    Point c;
+    c.x = (a.b.x * cos(d) - a.b.y * sin(d)) / sqrt(2) + b.x;
+    c.y = (a.b.x * sin(d) + a.b.y * cos(d)) / sqrt(2) + b.y;
+    return c;
+}
+
+Vector radiusVector(Vector a) {
+    Vector b;
+    a.b.x -= a.a.x;
+    a.b.y -= a.a.y;
+    a.a.x -= a.a.x;
+    a.a.y -= a.a.y;
+    return a;
+}
+
+int main() {
+    Point a, b;
+    cin >> a.x >> a.y >> b.x >> b.y;
+    Vector VectorAB = newVector(a, b);
+    Vector radiusVectorAB = radiusVector(VectorAB);
+    Point pointD = findPoint(radiusVectorAB, a, PI / 4);
+    Point pointB = findPoint(radiusVectorAB, a, -PI / 4);
+    printf("%.6f %.6f %.6f %.6f", pointD.x, pointD.y, pointB.x, pointB.y);
+}

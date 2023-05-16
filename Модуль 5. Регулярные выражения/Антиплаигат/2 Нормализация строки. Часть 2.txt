@@ -1,0 +1,25 @@
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+
+class Program
+{
+    static void Main()
+    {
+        string temp;
+        string text = "";
+        do
+        {
+            temp = Console.ReadLine();
+            text += temp;
+        } while (temp != null);
+
+        text = text.ToLower();
+        string normalized = Regex.Replace(text, @"[^a-z0-9\s]", "");
+        normalized = Regex.Replace(normalized, @"\b[a-z0-9]{1,3}\b", "");
+        normalized = normalized.Trim();
+
+        Console.WriteLine(normalized);
+    }
+}

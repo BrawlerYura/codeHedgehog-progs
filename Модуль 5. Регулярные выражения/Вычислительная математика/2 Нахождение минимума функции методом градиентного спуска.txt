@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+//Делали вместе с Ушаковым Федором
+class Program
+{
+    const double PRECISION = 0.0000001;
+    const double LEARNING_RATE = 0.1;
+    static void Main()
+    {
+        printAnswer();
+    }
+
+    static void printAnswer() {
+
+        string[] response = new string[3];
+        double currentX = 1, nextX = 0;
+        double currentY = 1, nextY = 0;
+        double gradientX;
+        double gradientY;
+
+        while((Math.Abs(currentX - nextX) >= PRECISION) && (Math.Abs(currentY - nextY) >= PRECISION))
+        {
+            Console.WriteLine("? " + currentX + " " + currentY);
+            Console.Out.Flush();
+            response = Console.ReadLine().Split(' ');
+            gradientX = double.Parse(response[1], CultureInfo.InvariantCulture);
+            gradientY = double.Parse(response[2], CultureInfo.InvariantCulture);
+
+            currentX = nextX;
+            currentY = nextY;
+            nextX = currentX - LEARNING_RATE * gradientX;
+            nextY = currentY - LEARNING_RATE * gradientY;
+        }
+
+        Console.WriteLine("! " + currentX + " " + currentY);
+        Console.Out.Flush();
+    }
+}

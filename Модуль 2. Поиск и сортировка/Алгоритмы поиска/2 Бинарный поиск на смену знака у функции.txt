@@ -1,0 +1,50 @@
+#include <iostream>
+using namespace std;
+double f(double x, double a, double b, double c, double d) {
+    return (a * x * x * x + b * x * x + c * x + d);
+}
+int main()
+{
+    const double eps = 1e-7;
+    double  r = 0, r1, r2, l, x, mid;
+    double a, b, c, d;
+    cin >> a >> b >> c >> d;
+    do {
+        r++;
+        r1 = f(r, a, b, c, d);
+        r2 = f(-r, a, b, c, d);
+    } while (r1 * r2 >= 0);
+    l = -r;
+    if (r1 >= 0) {
+        while (r - l > eps) {
+            r1 = f((l + r) / 2, a, b, c, d);
+            mid = (l + r) / 2;
+            if (r1 == 0) {
+                printf("%.6f\n", mid);
+                break;
+            }
+            else if (r1 >= 0) {
+                r = mid;
+            }
+            else if (r1 < 0) {
+                l = mid;
+            }
+        }
+    }
+    else {
+        while (r - l > eps) {
+            r1 = f((l + r) / 2, a, b, c, d);
+            mid = (l + r) / 2;
+            if (r1 == 0) {
+                printf("%.6f\n", mid);
+                break;
+            }
+            else if (r1 >= 0) {
+                l = mid;
+            }
+            else if (r1 < 0) {
+                r = mid;
+            }
+        }
+    }
+}

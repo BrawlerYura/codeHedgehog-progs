@@ -1,0 +1,96 @@
+#include <iostream>
+#include <vector>
+
+//Работали вместе с Сашенькой Кирсановым в дс
+
+using namespace std;
+
+bool check(vector<bool>& isManFree) {
+    for(int i = 0; i < isManFree.size(); i++) {
+        if(isManFree[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int findMaxIndex (vector<int>& malePreferences) {
+    int max = -1;
+    int maxIndex;
+    for(int i = 0; i < malePreferences.size(); i++) {
+        if(malePreferences[i] > max) {
+            max = malePreferences[i];
+            maxIndex = i;
+        }
+    }
+    return maxIndex;
+}
+
+void findPairs(vector<vector<int>>& malePreferences, vector<vector<int>>& femalePreferences, vector<int>& match, int n) {
+    vector<vector<int>> tempMalePreferences = malePreferences;
+    vector <bool> isManFree(n, true);
+    vector <bool> isWomanFree(n, true);
+
+    while (check(isManFree)) {
+        for(int maleIndex = 0; maleIndex < isManFree.size(); maleIndex++) {
+
+            if(isManFree[maleIndex]) {
+                int femaleIndex = findMaxIndex(malePreferences[maleIndex]);
+                malePreferences[maleIndex][femaleIndex] = -1;
+
+                if(isWomanFree[femaleIndex]) {
+                    isWomanFree[femaleIndex] = false;
+                    isManFree[maleIndex] = false;
+                    match[maleIndex] = femaleIndex;
+                } else {
+                    int tempMaleIndex = -1;
+
+                    for(int i = 0; i < n; i++) {
+                        if(match[i] == femaleIndex) {
+                            tempMaleIndex = i;
+                            break;
+                        }
+                    }
+
+                    if(femalePreferences[femaleIndex][maleIndex] > femalePreferences[femaleIndex][tempMaleIndex]) {
+                        isManFree[tempMaleIndex] = true;
+                        isManFree[maleIndex] = false;
+                        match[maleIndex] = femaleIndex;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    int happinessCoefficient = 0;
+    for(int i = 0 ; i < tempMalePreferences.size(); i++) {
+        happinessCoefficient += tempMalePreferences[i][match[i]];
+        happinessCoefficient += femalePreferences[match[i]][i];
+    }
+    cout << happinessCoefficient << endl;
+
+    for(int i = 0; i < match.size(); i++) {
+        cout << match[i] + 1 << " ";
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+    vector <vector<int>> malePreferences(n, vector<int>(n));
+    vector <vector<int>> femalePreferences(n, vector<int>(n));
+    vector<int> match(n,  -1);
+
+    for (int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            cin >> malePreferences[i][j];
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            cin >> femalePreferences[i][j];
+        }
+    }
+    findPairs(malePreferences, femalePreferences, match, n);
+}

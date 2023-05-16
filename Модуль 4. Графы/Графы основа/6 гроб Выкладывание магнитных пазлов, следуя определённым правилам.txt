@@ -1,0 +1,207 @@
+#include <iostream>
+
+using namespace std;
+
+int countInWay(char **board, char symbol, int i, int n, string way) {
+    int count = 0;
+    if (way == "row") {
+        for (int j = 0; j < n; j++) {
+            if (board[i][j] == symbol) {
+                count++;
+            }
+        }
+        return count;
+    } else {
+        for (int j = 0; j < n; j++) {
+            if (board[j][i] == symbol) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
+
+bool isValid(int *top, int *left, int *bottom, int *right, char **board, int rows, int columns, int row, int column,
+             char symbol, bool isEnd) {
+    if (!isEnd) {
+        if ((row - 1 >= 0 && board[row - 1][column] == symbol) ||
+            (column + 1 < columns && board[row][column + 1] == symbol) ||
+            (row + 1 < rows && board[row + 1][column] == symbol) ||
+            (column - 1 >= 0 && board[row][column - 1] == symbol)) {
+            return false;
+        }
+
+        int rowCount = countInWay(board, symbol, row, columns, "row");
+        int columnCount = countInWay(board, symbol, column, rows, "column");
+        if (symbol == '+') {
+            if (top[column] != -1 && columnCount >= top[column]) {
+                return false;
+            }
+            if (left[row] != -1 && rowCount >= left[row]) {
+                return false;
+            }
+        } else {
+            if (bottom[column] != -1 && columnCount >= bottom[column]) {
+                return false;
+            }
+            if (right[row] != -1 && rowCount >= right[row]) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        for (int i = 0; i < columns; i++) {
+            if (top[i] != countInWay(board, '+', i, rows, "column") && top[i] != -1) {
+                return false;
+            }
+            if (bottom[i] != countInWay(board, '-', i, rows, "column") && bottom[i] != -1) {
+                return false;
+            }
+        }
+        for (int i = 0; i < rows; i++) {
+            if (left[i] != countInWay(board, '+', i, columns, "row") && left[i] != -1) {
+                return false;
+            }
+            if (right[i] != countInWay(board, '-', i, columns, "row") && right[i] != -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+bool
+recursivePuzzlesSolving(int *top, int *left, int *bottom, int *right, char **rules, char **board, int rows,
+                        int columns,
+                        int row, int column) {
+    if (row == rows - 1 && column == columns - 1) {
+        if (isValid(top, left, bottom, right, board, rows, columns, 0, 0, '-', true)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    if (column >= columns) {
+        column = 0;
+        row++;
+    }
+
+    if (rules[row][column] == 'L') {
+        if (isValid(top, left, bottom, right, board, rows, columns, row, column, '+', false) &&
+            isValid(top, left, bottom, right, board, rows, columns, row, column + 1, '-', false)) {
+
+            board[row][column] = '+';
+            board[row][column + 1] = '-';
+
+            if (recursivePuzzlesSolving(top, left, bottom, right, rules, board, rows, columns, row, column + 1)) {
+                return true;
+            }
+
+            board[row][column] = 'X';
+            board[row][column + 1] = 'X';
+        }
+        if (isValid(top, left, bottom, right, board, rows, columns, row, column, '-', false) &&
+            isValid(top, left, bottom, right, board, rows, columns, row, column + 1, '+', false)) {
+
+            board[row][column] = '-';
+            board[row][column + 1] = '+';
+
+            if (recursivePuzzlesSolving(top, left, bottom, right, rules, board, rows, columns, row, column + 1)) {
+                return true;
+            }
+
+            board[row][column] = 'X';
+            board[row][column + 1] = 'X';
+        }
+    }
+
+    if (rules[row][column] == 'T') {
+        if (isValid(top, left, bottom, right, board, rows, columns, row, column, '+', false) &&
+            isValid(top, left, bottom, right, board, rows, columns, row + 1, column, '-', false)) {
+
+            board[row][column] = '+';
+            board[row + 1][column] = '-';
+
+            if (recursivePuzzlesSolving(top, left, bottom, right, rules, board, rows, columns, row, column + 1)) {
+                return true;
+            }
+
+            board[row][column] = 'X';
+            board[row + 1][column] = 'X';
+        }
+        if (isValid(top, left, bottom, right, board, rows, columns, row, column, '-', false) &&
+            isValid(top, left, bottom, right, board, rows, columns, row + 1, column, '+', false)) {
+
+            board[row][column] = '-';
+            board[row + 1][column] = '+';
+
+            if (recursivePuzzlesSolving(top, left, bottom, right, rules, board, rows, columns, row, column + 1)) {
+                return true;
+            }
+
+            board[row][column] = 'X';
+            board[row + 1][column] = 'X';
+        }
+    }
+
+    if (recursivePuzzlesSolving(top, left, bottom, right, rules, board, rows, columns, row, column + 1)) {
+        return true;
+    }
+
+    return false;
+}
+
+void
+solveMagneticPuzzles(int *top, int *left, int *bottom, int *right, char **rules, char **board, int rows,
+                     int columns) {
+    if (!recursivePuzzlesSolving(top, left, bottom, right, rules, board, rows, columns, 0, 0)) {
+        cout << "Solution does not exist";
+    } else {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                cout << board[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
+}
+
+int main() {
+    int rows, columns;
+    cin >> rows >> columns;
+
+    int *top = new int[columns];
+    int *left = new int[rows];
+    int *bottom = new int[columns];
+    int *right = new int[rows];
+
+    for (int i = 0; i < columns; i++) {
+        cin >> top[i];
+    }
+    for (int i = 0; i < columns; i++) {
+        cin >> bottom[i];
+    }
+    for (int i = 0; i < rows; i++) {
+        cin >> left[i];
+    }
+    for (int i = 0; i < rows; i++) {
+        cin >> right[i];
+    }
+
+    char **rules = new char *[rows];
+    char **board = new char *[rows];
+    for (int i = 0; i < rows; i++) {
+        rules[i] = new char[columns];
+        board[i] = new char[columns];
+    }
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            cin >> rules[i][j];
+            board[i][j] = 'X';
+        }
+    }
+
+    solveMagneticPuzzles(top, left, bottom, right, rules, board, rows, columns);
+}

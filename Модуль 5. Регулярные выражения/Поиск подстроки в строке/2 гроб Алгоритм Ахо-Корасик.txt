@@ -1,0 +1,131 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+
+using namespace std;
+//https://www.youtube.com/watch?v=AYDXXRL0iuc прикольный чел. Нарядился в человека-паука. Достойно, правда, питонист... и в вк тиме...
+
+const int CHARACERS_COUNT = 26;
+
+struct Vertex {
+    int suffLink, parentChar, goodLinks;
+    vector<int> next, move, id;
+    bool flag;
+    char ch;
+
+    Vertex(int parentChar, char ch) {
+        vector<int> temp(CHARACERS_COUNT, -1);
+        next = temp;
+        move = temp;
+        flag = false;
+        suffLink = -1;
+        this->parentChar = parentChar;
+        this->ch = ch;
+        goodLinks = -1;
+    }
+};
+
+void addToBohr(string str, vector<Vertex*>& bohr, vector<string>& pattern) {
+    int num = 0;
+    for (int i = 0; i < str.length(); i++) {
+        char ch = str[i] - 'a';
+        if (bohr[num]->next[ch] == -1) {
+            bohr.push_back(new Vertex(num, ch));
+            bohr[num]->next[ch] = bohr.size() - 1;
+        }
+        num = bohr[num]->next[ch];
+    }
+
+    bohr[num]->flag = true;
+    pattern.push_back(str);
+    bohr[num]->id.push_back(pattern.size() - 1);
+}
+
+int go(int vertex, char ch, vector<Vertex*>& bohr);
+
+int getSuffLink(int vertex, vector<Vertex*>& bohr) {
+    if (bohr[vertex]->suffLink == -1) {
+        if (vertex == 0 || bohr[vertex]->parentChar == 0) {
+            bohr[vertex]->suffLink = 0;
+        }
+        else {
+            bohr[vertex]->suffLink = go(getSuffLink(bohr[vertex]->parentChar, bohr), bohr[vertex]->ch, bohr);
+        }
+    }
+    return bohr[vertex]->suffLink;
+}
+
+int go(int vertex, char ch, vector<Vertex*>& bohr) {
+    if (bohr[vertex]->move[ch] == -1) {
+        if (bohr[vertex]->next[ch] != -1) {
+            bohr[vertex]->move[ch] = bohr[vertex]->next[ch];
+        }
+        else {
+            if (vertex == 0) {
+                bohr[vertex]->move[ch] = 0;
+            }
+            else {
+                bohr[vertex]->move[ch] = go(getSuffLink(vertex, bohr), ch, bohr);
+            }
+        }
+    }
+    return bohr[vertex]->move[ch];
+}
+
+int getGoodLink(int vertex, vector<Vertex*>& bohr) {
+    if (bohr[vertex]->goodLinks == -1) {
+        int temp = getSuffLink(vertex, bohr);
+        if (temp == 0) {
+            bohr[vertex]->goodLinks = 0;
+        }
+        else {
+            if (bohr[temp]->flag) {
+                bohr[vertex]->goodLinks = temp;
+            }
+            else {
+                bohr[vertex]->goodLinks = getGoodLink(temp, bohr);
+            }
+        }
+    }
+    return bohr[vertex]->goodLinks;
+}
+
+void check(int vertex, int i, vector<Vertex*>& bohr, vector<string>& pattern, vector<string>& results) {
+    for (int temp = vertex; temp != 0; temp = getGoodLink(temp, bohr)) {
+        if (bohr[temp]->flag) {
+            for (int j = 0; j < bohr[temp]->id.size(); j++) {
+                int position = i - pattern[bohr[temp]->id[j]].length() + 1;
+                results[bohr[temp]->id[j]] += to_string(position) + " ";
+            }
+        }
+    }
+}
+
+void findSubstrings(string str, vector<Vertex*>& bohr, vector<string>& pattern, vector<string>& results) {
+    int vertex = 0;
+    for (int i = 0; i < str.length(); i++) {
+        vertex = go(vertex, str[i] - 'a', bohr);
+        check(vertex, i + 1, bohr, pattern, results);
+    }
+}
+
+int main() {
+    vector<Vertex*> bohr;
+    vector<string> pattern;
+    int count;
+    string str, text;
+
+    cin >> text >> count;
+
+    bohr.push_back(new Vertex(0, '0'));
+    vector<string> results(count, "");
+    for (int i = 0; i < count; i++) {
+        cin >> str;
+        addToBohr(str, bohr, pattern);
+    }
+    findSubstrings(text, bohr, pattern, results);
+    for (int i = 0; i < results.size(); i++) {
+        cout << results[i] << "\n";
+    }
+}

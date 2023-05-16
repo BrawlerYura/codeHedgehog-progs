@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+vector<vector<bool>> isVisited;
+int rows, columns;
+
+struct Coords {
+    int x = 0, y = 0;
+};
+
+bool isInField(Coords coords) {
+    if (coords.x < rows && coords.x >= 0 && coords.y < columns && coords.y >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+vector<Coords> findOutDirection(Coords currentCell) {
+    vector<Coords> possibleMoves;
+    Coords temp;
+    int moves[8][2]{{-1, -2},
+                    {-2, -1},
+                    {1,  -2},
+                    {-1, 2},
+                    {1,  2},
+                    {2,  -1},
+                    {-2, 1},
+                    {2,  1}};
+    for (int i = 0; i < 8; i++) {
+        temp.x = currentCell.x + moves[i][0];
+        temp.y = currentCell.y + moves[i][1];
+        if (isInField(temp) && !isVisited[temp.x][temp.y]) {
+            possibleMoves.push_back(temp);
+        }
+    }
+    return possibleMoves;
+}
+bool comp(Coords a, Coords b) {
+    vector<Coords> aPossibleMoves = findOutDirection(a);
+    vector<Coords> bPossibleMoves = findOutDirection(b);
+    return aPossibleMoves.size() < bPossibleMoves.size();
+}
+
+bool gamilton(Coords current, vector<Coords> &path) {
+    path.push_back(current);
+    if (path.size() == rows * columns) {
+        return true;
+    }
+    isVisited[current.x][current.y] = true;
+    vector<Coords> possibleMoves = findOutDirection(current);
+    sort(possibleMoves.begin(), possibleMoves.end(), comp);
+    for(int i = 0; i < possibleMoves.size(); i++) {
+            Coords temp;
+            temp.x = possibleMoves[i].x;
+            temp.y = possibleMoves[i].y;
+            if(gamilton(temp, path)) {
+                return true;
+            }
+    }
+    isVisited[current.x][current.y] = false;
+    path.pop_back();
+    return false;
+}
+
+void printPath(vector<Coords> &path) {
+    for (int i = 0; i < path.size(); i++) {
+        cout << path[i].x + 1 << " " << path[i].y + 1 << endl;
+    }
+}
+
+int main() {
+    cin >> rows >> columns;
+
+    vector<Coords> path;
+    isVisited.resize(rows, vector<bool>(columns, false));
+    Coords start;
+    if (gamilton(start, path)) {
+        printPath(path);
+    } else {
+        cout << "-1";
+    }
+}

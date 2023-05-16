@@ -1,0 +1,36 @@
+using System;
+using System.Collections.Specialized;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+
+class Program
+{
+    static void Main()
+    {
+        printAnswer();
+    }
+
+    static void printAnswer() {
+
+        string[] response = new string[2];
+        double x = 1;
+        double y = 1;
+        double derivative;
+        const double eps = 0.000001;
+
+        while (Math.Abs(y) >= eps)
+        {
+            Console.WriteLine("? " + x);
+            Console.Out.Flush();
+            response = Console.ReadLine().Split(' ');
+            y = double.Parse(response[0], CultureInfo.InvariantCulture);
+            derivative = double.Parse(response[1], CultureInfo.InvariantCulture);
+
+            x = x - (y / derivative);
+        }
+
+        Console.WriteLine("! " + x);
+    }
+}
