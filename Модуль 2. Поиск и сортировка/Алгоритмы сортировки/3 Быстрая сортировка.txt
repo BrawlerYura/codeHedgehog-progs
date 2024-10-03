@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 using namespace std;
-void QuickSort(int *arr, int l, int r)
+void quickSort(int *arr, int l, int r)
 {
     int i = l;
     int j = r;
@@ -20,9 +20,9 @@ void QuickSort(int *arr, int l, int r)
         }
     }
     if (j > l)
-        QuickSort(arr, l, j);
+        quickSort(arr, l, j);
     if (i < r)
-        QuickSort(arr, i, r);
+        quickSort(arr, i, r);
 }
 
 int main()
